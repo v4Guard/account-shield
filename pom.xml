@@ -35,6 +35,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.jakub</groupId>
+            <artifactId>JPremium-API</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/JPremiumAPI.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.nickuc.login</groupId>
             <artifactId>nlogin-api</artifactId>
             <version>10.0</version>

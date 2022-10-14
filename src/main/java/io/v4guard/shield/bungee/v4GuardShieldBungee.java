@@ -1,5 +1,6 @@
 package io.v4guard.shield.bungee;
 
+import io.v4guard.shield.bungee.hooks.JPremiumBungeeHook;
 import io.v4guard.shield.bungee.hooks.nLoginBungeeHook;
 import io.v4guard.shield.bungee.messaging.BungeePluginMessager;
 import io.v4guard.shield.core.hook.AuthenticationHook;
@@ -48,11 +49,14 @@ public class v4GuardShieldBungee extends Plugin {
         if(this.getProxy().getPluginManager().getPlugin("nLogin") != null){
             this.authHook = new nLoginBungeeHook(this);
         }
+        if(this.getProxy().getPluginManager().getPlugin("JPremium") != null){
+            this.authHook = new JPremiumBungeeHook(this);
+        }
         if(authHook == null) {
             CommandSender consoleSender = this.getProxy().getConsole();
             consoleSender.sendMessage(new TextComponent("§c[v4guard-account-shield] (Bungee) No authentication hooks found."));
             consoleSender.sendMessage(new TextComponent("§c[v4guard-account-shield] (Bungee) Install one of these authentication plugins to use account shield:"));
-            consoleSender.sendMessage(new TextComponent("§cAvailable hooks: nLogin"));
+            consoleSender.sendMessage(new TextComponent("§cAvailable hooks: nLogin, JPremium"));
         }
     }
 }
