@@ -13,7 +13,7 @@ public class v4GuardShieldCore {
 
     private ShieldMode shieldMode;
 
-    public static final String pluginVersion = "1.0.0";
+    public static final String pluginVersion = "1.0.1";
 
     public v4GuardShieldCore(ShieldMode mode) {
         INSTANCE = this;
