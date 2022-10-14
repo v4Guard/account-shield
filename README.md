@@ -7,6 +7,11 @@ This plugin is intended to connect your authentication servers (or AuthLobbies) 
 ## 📌 Compatibility
 
     ✅ Spigot/Paper 1.8.8 - 1.19.2
+    ✅ BungeeCord/Waterfall 1.8.8 - 1.19.2
+    ✅ Velocity 1.7.2 - 1.19.2
+    *️⃣ AuthMe Reloaded 5.6.0-beta2
+    *️⃣ nLogin 10.0
+    *️⃣ JPremium CLEARED-1.16.1
 
 ## 📦 Installation and download
 
