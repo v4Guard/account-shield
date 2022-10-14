@@ -2,6 +2,6 @@ package io.v4guard.shield.core.mode;
 
 public enum ShieldMode {
 
-    UNKNOWN, SPIGOT, BUNGEE;
+    UNKNOWN, SPIGOT, BUNGEE, VELOCITY;
 
 }
