@@ -4,8 +4,10 @@ import io.v4guard.shield.core.hook.AuthenticationHook;
 import io.v4guard.shield.core.mode.ShieldMode;
 import io.v4guard.shield.core.v4GuardShieldCore;
 import io.v4guard.shield.spigot.hooks.AuthMeSpigotHook;
+import io.v4guard.shield.spigot.hooks.nLoginSpigotHook;
 import io.v4guard.shield.spigot.messaging.SpigotPluginMessager;
 import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class v4GuardShieldSpigot extends JavaPlugin {
@@ -46,6 +48,15 @@ public class v4GuardShieldSpigot extends JavaPlugin {
     private void checkForHooks(){
         if(Bukkit.getPluginManager().getPlugin("AuthMe") != null){
             this.authHook = new AuthMeSpigotHook(this);
+        }
+        if(Bukkit.getPluginManager().getPlugin("nLogin") != null){
+            this.authHook = new nLoginSpigotHook(this);
+        }
+        if(authHook == null) {
+            ConsoleCommandSender consoleSender = this.getServer().getConsoleSender();
+            consoleSender.sendMessage("§c[v4guard-account-shield] (Spigot) No authentication hooks found.");
+            consoleSender.sendMessage("§c[v4guard-account-shield] (Spigot) Install one of these authentication plugins to use account shield:");
+            consoleSender.sendMessage("§cAvailable hooks: AuthMe, nLogin");
         }
         //TODO add support for JPremium, nLogin
     }

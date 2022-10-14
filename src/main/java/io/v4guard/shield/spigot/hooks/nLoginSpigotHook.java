@@ -1,24 +1,22 @@
 package io.v4guard.shield.spigot.hooks;
 
-import fr.xephi.authme.events.LoginEvent;
-import fr.xephi.authme.events.RegisterEvent;
+import com.nickuc.login.api.event.bukkit.auth.LoginEvent;
+import com.nickuc.login.api.event.bukkit.auth.RegisterEvent;
 import io.v4guard.shield.core.auth.AuthType;
 import io.v4guard.shield.core.auth.Authentication;
 import io.v4guard.shield.core.hook.AuthenticationHook;
 import io.v4guard.shield.core.v4GuardShieldCore;
-import io.v4guard.shield.spigot.v4GuardShieldSpigot;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class AuthMeSpigotHook extends AuthenticationHook implements Listener {
+public class nLoginSpigotHook extends AuthenticationHook implements Listener {
 
-    public AuthMeSpigotHook(JavaPlugin plugin) {
-        super("AuthMe");
+    public nLoginSpigotHook(JavaPlugin plugin) {
+        super("nLogin");
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        Bukkit.getServer().getConsoleSender().sendMessage("§c[v4guard-account-shield] (Spigot) Hooked into AuthMe");
+        Bukkit.getServer().getConsoleSender().sendMessage("§c[v4guard-account-shield] (Spigot) Hooked into nLogin");
     }
 
     @EventHandler
