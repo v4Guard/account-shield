@@ -37,10 +37,6 @@ public class SpigotPluginMessager extends PluginMessager {
         DataOutputStream out = new DataOutputStream(b);
         try {
 
-            System.out.println((auth.serialize().toJson()));
-            System.out.println(PluginMessager.CHANNEL);
-            System.out.println(v4GuardShieldSpigot.getInstance() != null);
-
             out.writeUTF(auth.serialize().toJson());
             player.sendPluginMessage(v4GuardShieldSpigot.getInstance(),
                     PluginMessager.CHANNEL,
