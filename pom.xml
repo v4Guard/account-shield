@@ -104,12 +104,17 @@
                     <artifactSet>
                         <includes>
                             <include>org.mongodb:bson</include>
+                            <include>com.jakub:JPremiumAPI</include>
                         </includes>
                     </artifactSet>
                     <relocations>
                         <relocation>
                             <pattern>org.bson</pattern>
                             <shadedPattern>io.v4guard.shaded.org.bson</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.jakub</pattern>
+                            <shadedPattern>io.v4guard.shaded.com.jakub</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
