@@ -17,8 +17,8 @@ This plugin is intended to connect your authentication servers (or AuthLobbies) 
 
 You can download the latest version of v4Guard Account Shield from our official GitHub repository. All the source code of the plugin is available in this same repository in a public and transparent way for all our customers.
 
-    📦 Download: https://v4guard.io/download
-    📦 Source code: https://v4guard.io/code
+    📦 Download: https://github.com/v4Guard/v4guard-account-shield/releases/latest
+    📦 Source code: https://github.com/v4Guard/v4guard-account-shield
 
 The installation of the plugin is very simple, just drag the .jar file to the plugins directory of your server and restart the server.
 
