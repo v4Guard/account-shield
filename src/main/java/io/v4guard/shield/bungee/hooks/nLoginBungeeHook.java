@@ -1,24 +1,21 @@
-package io.v4guard.shield.spigot.hooks;
+package io.v4guard.shield.bungee.hooks;
 
-import fr.xephi.authme.events.LoginEvent;
-import fr.xephi.authme.events.RegisterEvent;
+import com.nickuc.login.api.event.bungee.auth.LoginEvent;
+import com.nickuc.login.api.event.bungee.auth.RegisterEvent;
 import io.v4guard.shield.core.auth.AuthType;
 import io.v4guard.shield.core.auth.Authentication;
 import io.v4guard.shield.core.hook.AuthenticationHook;
 import io.v4guard.shield.core.v4GuardShieldCore;
-import io.v4guard.shield.spigot.v4GuardShieldSpigot;
-import org.bson.Document;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.event.EventHandler;
 
-public class AuthMeSpigotHook extends AuthenticationHook implements Listener {
+public class nLoginBungeeHook extends AuthenticationHook implements Listener {
 
-    public AuthMeSpigotHook(JavaPlugin plugin) {
-        super("AuthMe");
-        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        Bukkit.getServer().getConsoleSender().sendMessage("§c[v4guard-account-shield] (Spigot) Hooked into AuthMe");
+    public nLoginBungeeHook(Plugin plugin) {
+        super("nLogin");
+        plugin.getProxy().getPluginManager().registerListener(plugin, this);
+        plugin.getProxy().getConsole().sendMessage("§c[v4guard-account-shield] (Bungee) Hooked into nLogin");
     }
 
     @EventHandler

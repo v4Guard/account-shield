@@ -1,0 +1,9 @@
+name: v4guard-account-shield
+version: ${project.version}
+main: io.v4guard.shield.bungee.v4GuardShieldBungee
+author: DigitalSynware
+depends:
+  - v4guard-plugin
+softdepend:
+  - nLogin
+  - JPremium

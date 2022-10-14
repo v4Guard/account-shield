@@ -4,3 +4,4 @@ main: io.v4guard.shield.spigot.v4GuardShieldSpigot
 author: DigitalSynware
 softdepend:
   - AuthMe
+  - nLogin
