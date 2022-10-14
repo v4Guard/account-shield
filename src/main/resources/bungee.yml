@@ -6,3 +6,4 @@ depends:
   - v4guard-plugin
 softdepend:
   - nLogin
+  - JPremium

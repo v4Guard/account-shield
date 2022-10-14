@@ -52,7 +52,7 @@ public class v4GuardShieldBungee extends Plugin {
             CommandSender consoleSender = this.getProxy().getConsole();
             consoleSender.sendMessage(new TextComponent("§c[v4guard-account-shield] (Bungee) No authentication hooks found."));
             consoleSender.sendMessage(new TextComponent("§c[v4guard-account-shield] (Bungee) Install one of these authentication plugins to use account shield:"));
-            consoleSender.sendMessage(new TextComponent("§cAvailable hooks: nLogin"));
+            consoleSender.sendMessage(new TextComponent("§cAvailable hooks: nLogin, JPremium"));
         }
     }
 }
