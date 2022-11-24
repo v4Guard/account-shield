@@ -19,6 +19,7 @@ public class JPremiumBungeeHook extends AuthenticationHook implements Listener {
 
     @EventHandler
     public void onUserEvent(UserEvent.Login event) {
+        if(!event.getUserProfile().getProxiedPlayer().hasPermission("v4guard.accshield")) return;
         String username = event.getUserProfile().getProxiedPlayer().getName();
         Authentication auth = new Authentication(username, AuthType.LOGIN);
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
@@ -26,6 +27,7 @@ public class JPremiumBungeeHook extends AuthenticationHook implements Listener {
 
     @EventHandler
     public void onUserEvent(UserEvent.Register event) {
+        if(!event.getUserProfile().getProxiedPlayer().hasPermission("v4guard.accshield")) return;
         String username = event.getUserProfile().getProxiedPlayer().getName();
         Authentication auth = new Authentication(username, AuthType.REGISTER);
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
