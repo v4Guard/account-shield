@@ -20,15 +20,21 @@ public class nLoginVelocityHook extends AuthenticationHook implements Listener {
 
     @Subscribe
     public void onLogin(LoginEvent event) {
-        if(!event.getPlayer().hasPermission("v4guard.accshield")) return;
-        Authentication auth = new Authentication(event.getPlayer().getUsername(), AuthType.LOGIN);
+        Authentication auth = new Authentication(
+                event.getPlayer().getUsername(),
+                AuthType.LOGIN,
+                event.getPlayer().hasPermission("v4guard.accshield")
+        );
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
     }
 
     @Subscribe
     public void onRegister(RegisterEvent event) {
-        if(!event.getPlayer().hasPermission("v4guard.accshield")) return;
-        Authentication auth = new Authentication(event.getPlayer().getUsername(), AuthType.REGISTER);
+        Authentication auth = new Authentication(
+                event.getPlayer().getUsername(),
+                AuthType.REGISTER,
+                event.getPlayer().hasPermission("v4guard.accshield")
+        );
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
     }
 

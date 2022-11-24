@@ -5,6 +5,7 @@ import io.v4guard.shield.core.auth.AuthType;
 import io.v4guard.shield.core.auth.Authentication;
 import io.v4guard.shield.core.hook.AuthenticationHook;
 import io.v4guard.shield.core.v4GuardShieldCore;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
@@ -19,17 +20,23 @@ public class JPremiumBungeeHook extends AuthenticationHook implements Listener {
 
     @EventHandler
     public void onUserEvent(UserEvent.Login event) {
-        if(!event.getUserProfile().getProxiedPlayer().hasPermission("v4guard.accshield")) return;
-        String username = event.getUserProfile().getProxiedPlayer().getName();
-        Authentication auth = new Authentication(username, AuthType.LOGIN);
+        ProxiedPlayer proxiedPlayer = event.getUserProfile().getProxiedPlayer();
+        Authentication auth = new Authentication(
+                proxiedPlayer.getName(),
+                AuthType.LOGIN,
+                proxiedPlayer.hasPermission("v4guard.accshield")
+        );
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
     }
 
     @EventHandler
     public void onUserEvent(UserEvent.Register event) {
-        if(!event.getUserProfile().getProxiedPlayer().hasPermission("v4guard.accshield")) return;
-        String username = event.getUserProfile().getProxiedPlayer().getName();
-        Authentication auth = new Authentication(username, AuthType.REGISTER);
+        ProxiedPlayer proxiedPlayer = event.getUserProfile().getProxiedPlayer();
+        Authentication auth = new Authentication(
+                proxiedPlayer.getName(),
+                AuthType.REGISTER,
+                proxiedPlayer.hasPermission("v4guard.accshield")
+        );
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
     }
 
