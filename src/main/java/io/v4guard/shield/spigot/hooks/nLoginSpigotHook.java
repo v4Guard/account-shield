@@ -21,13 +21,21 @@ public class nLoginSpigotHook extends AuthenticationHook implements Listener {
 
     @EventHandler
     public void onLogin(LoginEvent event) {
-        Authentication auth = new Authentication(event.getPlayer().getName(), AuthType.LOGIN);
+        Authentication auth = new Authentication(
+                event.getPlayer().getName(),
+                AuthType.LOGIN,
+                event.getPlayer().hasPermission("v4guard.accshield")
+        );
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
     }
 
     @EventHandler
     public void onRegister(RegisterEvent event) {
-        Authentication auth = new Authentication(event.getPlayer().getName(), AuthType.REGISTER);
+        Authentication auth = new Authentication(
+                event.getPlayer().getName(),
+                AuthType.REGISTER,
+                event.getPlayer().hasPermission("v4guard.accshield")
+        );
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
     }
 
