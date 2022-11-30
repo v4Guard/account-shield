@@ -41,6 +41,13 @@ public class v4GuardShieldBungee extends Plugin {
         return v4GuardShieldBungee;
     }
 
+    public void registerHook(AuthenticationHook authHook) {
+        if(this.authHook != null){
+            this.getProxy().getConsole().sendMessage(new TextComponent("§c[v4guard-account-shield] (Bungee) " + authHook.getHookName() + " hook unregistered"));
+        }
+        this.authHook = authHook;
+    }
+
     public AuthenticationHook getAuthHook() {
         return authHook;
     }
@@ -55,7 +62,7 @@ public class v4GuardShieldBungee extends Plugin {
         if(authHook == null) {
             CommandSender consoleSender = this.getProxy().getConsole();
             consoleSender.sendMessage(new TextComponent("§c[v4guard-account-shield] (Bungee) No authentication hooks found."));
-            consoleSender.sendMessage(new TextComponent("§c[v4guard-account-shield] (Bungee) Install one of these authentication plugins to use account shield:"));
+            consoleSender.sendMessage(new TextComponent("§c[v4guard-account-shield] (Bungee) Register your own hook or install one of these authentication plugins to use account shield:"));
             consoleSender.sendMessage(new TextComponent("§cAvailable hooks: nLogin, JPremium"));
         }
     }

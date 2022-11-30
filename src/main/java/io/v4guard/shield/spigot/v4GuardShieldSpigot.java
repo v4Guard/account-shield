@@ -6,6 +6,7 @@ import io.v4guard.shield.core.v4GuardShieldCore;
 import io.v4guard.shield.spigot.hooks.AuthMeSpigotHook;
 import io.v4guard.shield.spigot.hooks.nLoginSpigotHook;
 import io.v4guard.shield.spigot.messaging.SpigotPluginMessager;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,6 +42,13 @@ public class v4GuardShieldSpigot extends JavaPlugin {
         return v4GuardSpigot;
     }
 
+    public void registerHook(AuthenticationHook authHook) {
+        if(this.authHook != null){
+            this.getServer().getConsoleSender().sendMessage("§c[v4guard-account-shield] (Spigot) " + authHook.getHookName() + " hook unregistered");
+        }
+        this.authHook = authHook;
+    }
+
     public AuthenticationHook getAuthHook() {
         return authHook;
     }
@@ -55,7 +63,7 @@ public class v4GuardShieldSpigot extends JavaPlugin {
         if(authHook == null) {
             ConsoleCommandSender consoleSender = this.getServer().getConsoleSender();
             consoleSender.sendMessage("§c[v4guard-account-shield] (Spigot) No authentication hooks found.");
-            consoleSender.sendMessage("§c[v4guard-account-shield] (Spigot) Install one of these authentication plugins to use account shield:");
+            consoleSender.sendMessage("§c[v4guard-account-shield] (Spigot) Register your own hook or install one of these authentication plugins to use account shield:");
             consoleSender.sendMessage("§cAvailable hooks: AuthMe, nLogin");
         }
         //TODO add support for JPremium, nLogin
