@@ -76,6 +76,13 @@ public class v4GuardShieldVelocity {
         return authHook;
     }
 
+    public void registerHook(AuthenticationHook authHook) {
+        if(this.authHook != null){
+            sendConsoleMessage("§c[v4guard-account-shield] (Velocity) " + authHook.getHookName() + " hook unregistered");
+        }
+        this.authHook = authHook;
+    }
+
     public ProxyServer getServer() {
         return server;
     }
@@ -85,9 +92,8 @@ public class v4GuardShieldVelocity {
             this.authHook = new nLoginVelocityHook(this);
         }
         if(authHook == null) {
-            ConsoleCommandSource consoleSender = this.getServer().getConsoleCommandSource();
             sendConsoleMessage("§c[v4guard-account-shield] (Velocity) No authentication hooks found.");
-            sendConsoleMessage("§c[v4guard-account-shield] (Velocity) Install one of these authentication plugins to use account shield:");
+            sendConsoleMessage("§c[v4guard-account-shield] (Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
             sendConsoleMessage("§cAvailable hooks: nLogin");
         }
     }
