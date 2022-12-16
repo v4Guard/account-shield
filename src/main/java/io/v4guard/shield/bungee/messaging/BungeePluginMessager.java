@@ -18,7 +18,7 @@ public class BungeePluginMessager extends PluginMessager {
 
     @Override
     public void sendMessage(Authentication auth) {
-        ConnectorAuthentication connectorAuth = new ConnectorAuthentication(auth.getUsername(), auth.getAuthType());
+        ConnectorAuthentication connectorAuth = new ConnectorAuthentication(auth.getUsername(), auth.getAuthType(), auth.hasPermission());
         ConnectorAuthentication.sendMessage(connectorAuth);
     }
 }

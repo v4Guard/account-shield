@@ -22,6 +22,10 @@ public class Authentication {
         return authType;
     }
 
+    public boolean hasPermission() {
+        return hasPermission;
+    }
+
     public Document serialize(){
         return new Document("username", username)
                 .append("authType", authType.toString())
