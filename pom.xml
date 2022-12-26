@@ -38,8 +38,6 @@
             <groupId>com.jakub</groupId>
             <artifactId>JPremium-API</artifactId>
             <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/JPremiumAPI.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.nickuc.login</groupId>
@@ -104,7 +102,7 @@
                     <artifactSet>
                         <includes>
                             <include>org.mongodb:bson</include>
-                            <include>com.jakub:JPremiumAPI</include>
+                            <include>com.jakub:JPremium-API</include>
                         </includes>
                     </artifactSet>
                     <relocations>
