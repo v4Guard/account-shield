@@ -5,13 +5,13 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
-import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
 import io.v4guard.plugin.core.v4GuardCore;
 import io.v4guard.plugin.velocity.messager.Messager;
 import io.v4guard.shield.core.hook.AuthenticationHook;
 import io.v4guard.shield.core.mode.ShieldMode;
 import io.v4guard.shield.core.v4GuardShieldCore;
+import io.v4guard.shield.velocity.hooks.JPremiumVelocityHook;
 import io.v4guard.shield.velocity.messaging.VelocityPluginMessager;
 import io.v4guard.shield.velocity.hooks.nLoginVelocityHook;
 import net.kyori.adventure.text.Component;
@@ -88,13 +88,16 @@ public class v4GuardShieldVelocity {
     }
 
     private void checkForHooks(){
-        if(this.getServer().getPluginManager().getPlugin("nLogin") != null){
+        if(this.getServer().getPluginManager().getPlugin("nLogin").isPresent()){
             this.authHook = new nLoginVelocityHook(this);
+        }
+        if(this.getServer().getPluginManager().getPlugin("jpremium").isPresent()){
+            this.authHook = new JPremiumVelocityHook(this);
         }
         if(authHook == null) {
             sendConsoleMessage("§c[v4guard-account-shield] (Velocity) No authentication hooks found.");
             sendConsoleMessage("§c[v4guard-account-shield] (Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
-            sendConsoleMessage("§cAvailable hooks: nLogin");
+            sendConsoleMessage("§cAvailable hooks: nLogin, JPremium");
         }
     }
     

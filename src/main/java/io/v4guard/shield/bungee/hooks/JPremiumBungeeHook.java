@@ -1,5 +1,6 @@
 package io.v4guard.shield.bungee.hooks;
 
+import com.jakub.premium.api.User;
 import com.jakub.premium.api.event.UserEvent;
 import io.v4guard.shield.core.auth.AuthType;
 import io.v4guard.shield.core.auth.Authentication;
@@ -31,6 +32,10 @@ public class JPremiumBungeeHook extends AuthenticationHook implements Listener {
 
     @EventHandler
     public void onUserEvent(UserEvent.Register event) {
+        User user = event.getUserProfile();
+        //Ignore premium and bedrock players
+        //JPremium will call UserEvent.Login for them
+        if(user.isPremium() || user.isBedrock()) return;
         ProxiedPlayer proxiedPlayer = event.getUserProfile().getProxiedPlayer();
         Authentication auth = new Authentication(
                 proxiedPlayer.getName(),
