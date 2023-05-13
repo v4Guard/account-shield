@@ -26,7 +26,7 @@ public class SpigotPluginMessager extends PluginMessager {
     public void sendMessage(Authentication auth) {
 
         if(pluginConnectorFound){
-            ConnectorAuthentication connectorAuth = new ConnectorAuthentication(auth.getUsername(), auth.getAuthType());
+            ConnectorAuthentication connectorAuth = new ConnectorAuthentication(auth);
             ConnectorAuthentication.sendMessage(connectorAuth);
             return;
         }
