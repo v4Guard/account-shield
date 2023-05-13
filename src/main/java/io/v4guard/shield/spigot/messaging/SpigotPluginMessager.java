@@ -32,6 +32,7 @@ public class SpigotPluginMessager extends PluginMessager {
         }
 
         Player player = Bukkit.getPlayer(auth.getUsername());
+        if (player == null) return;
 
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(b);
