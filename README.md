@@ -34,7 +34,7 @@ The installation of the plugin is very simple, just drag the .jar file to the pl
     📧 Contact: support@v4guard.io
     📞 Support: https://v4guard.io/discord
     📄 Changelog: https://github.com/v4Guard/v4guard-account-shield/commits/
-    📄 Contributors: Ismael Hernández, Samuel Fernández & Alex Gheorghe
+    📄 Contributors: Ismael Hernández, Samuel Fernández
 
 ## 📝 License
 v4Guard is open source software under the GNU General Public License v3.0. You can find a copy of the license in the GitHub repository.
