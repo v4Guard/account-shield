@@ -1,15 +1,20 @@
 package io.v4guard.shield.core.auth;
 
+import io.v4guard.plugin.core.CoreInstance;
 import org.bson.Document;
+
+import java.util.UUID;
 
 public class ConnectorAuthentication {
 
     private final String username;
+    private final UUID uuid;
     private final io.v4guard.plugin.core.accounts.auth.AuthType authType;
     private boolean hasPermission;
 
-    public ConnectorAuthentication(String username, AuthType authType, boolean hasPermission) {
+    public ConnectorAuthentication(String username, UUID uuid, AuthType authType, boolean hasPermission) {
         this.username = username;
+        this.uuid = uuid;
         switch (authType) {
             case LOGIN:
                 this.authType = io.v4guard.plugin.core.accounts.auth.AuthType.LOGIN;
@@ -24,8 +29,9 @@ public class ConnectorAuthentication {
         this.hasPermission = hasPermission;
     }
 
-    public ConnectorAuthentication(Authentication auth){
+    public ConnectorAuthentication(Authentication auth) {
         this.username = auth.getUsername();
+        this.uuid = auth.getUuid();
         switch (auth.getAuthType()) {
             case LOGIN:
                 this.authType = io.v4guard.plugin.core.accounts.auth.AuthType.LOGIN;
@@ -49,15 +55,15 @@ public class ConnectorAuthentication {
     }
 
     public io.v4guard.plugin.core.accounts.auth.Authentication toAuthentication(){
-        return new io.v4guard.plugin.core.accounts.auth.Authentication(username, authType, hasPermission);
+        return new io.v4guard.plugin.core.accounts.auth.Authentication(username, uuid, authType, hasPermission);
     }
 
     public boolean hasPermission() {
         return hasPermission;
     }
 
-    public static void sendMessage(ConnectorAuthentication auth){
-        io.v4guard.plugin.core.v4GuardCore.getInstance().getAccountShieldManager().sendSocketMessage(auth.toAuthentication());
+    public static void sendMessage(ConnectorAuthentication auth) {
+        CoreInstance.get().getAccountShieldSender().sendSocketMessage(auth.toAuthentication());
     }
 
     public Document serialize(){

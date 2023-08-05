@@ -5,15 +5,13 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
-import com.velocitypowered.api.proxy.ConsoleCommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
-import io.v4guard.plugin.core.v4GuardCore;
-import io.v4guard.plugin.velocity.messager.Messager;
+import io.v4guard.plugin.core.compatibility.Messenger;
 import io.v4guard.shield.core.hook.AuthenticationHook;
 import io.v4guard.shield.core.mode.ShieldMode;
 import io.v4guard.shield.core.v4GuardShieldCore;
-import io.v4guard.shield.velocity.messaging.VelocityPluginMessager;
 import io.v4guard.shield.velocity.hooks.nLoginVelocityHook;
+import io.v4guard.shield.velocity.messaging.VelocityPluginMessager;
 import net.kyori.adventure.text.Component;
 
 import java.util.logging.Logger;
@@ -21,7 +19,7 @@ import java.util.logging.Logger;
 @Plugin(
         id = "v4guard-account-shield",
         name = "v4Guard Account Shield",
-        version = v4GuardCore.pluginVersion,
+        version = v4GuardShieldCore.pluginVersion,
         url = "https://v4guard.io",
         description = "v4Guard Account Shield for Minecraft Servers",
         authors = {"DigitalSynware"},
@@ -38,7 +36,7 @@ public class v4GuardShieldVelocity {
 
     private ProxyServer server;
     private Logger logger;
-    private Messager messager;
+    private Messenger messenger;
 
     @Inject
     public v4GuardShieldVelocity(ProxyServer server, Logger logger) {

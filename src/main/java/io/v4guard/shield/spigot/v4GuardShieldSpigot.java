@@ -6,7 +6,6 @@ import io.v4guard.shield.core.v4GuardShieldCore;
 import io.v4guard.shield.spigot.hooks.AuthMeSpigotHook;
 import io.v4guard.shield.spigot.hooks.nLoginSpigotHook;
 import io.v4guard.shield.spigot.messaging.SpigotPluginMessager;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
