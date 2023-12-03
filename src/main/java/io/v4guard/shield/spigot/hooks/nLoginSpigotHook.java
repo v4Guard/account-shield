@@ -23,6 +23,7 @@ public class nLoginSpigotHook extends AuthenticationHook implements Listener {
     public void onLogin(LoginEvent event) {
         Authentication auth = new Authentication(
                 event.getPlayer().getName(),
+                event.getPlayer().getUniqueId(),
                 AuthType.LOGIN,
                 event.getPlayer().hasPermission("v4guard.accshield")
         );
@@ -33,6 +34,7 @@ public class nLoginSpigotHook extends AuthenticationHook implements Listener {
     public void onRegister(RegisterEvent event) {
         Authentication auth = new Authentication(
                 event.getPlayer().getName(),
+                event.getPlayer().getUniqueId(),
                 AuthType.REGISTER,
                 event.getPlayer().hasPermission("v4guard.accshield")
         );

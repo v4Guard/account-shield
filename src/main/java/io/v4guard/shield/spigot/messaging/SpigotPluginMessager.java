@@ -1,6 +1,5 @@
 package io.v4guard.shield.spigot.messaging;
 
-import io.v4guard.plugin.core.v4GuardCore;
 import io.v4guard.shield.core.auth.Authentication;
 import io.v4guard.shield.core.auth.ConnectorAuthentication;
 import io.v4guard.shield.core.messaging.PluginMessager;
