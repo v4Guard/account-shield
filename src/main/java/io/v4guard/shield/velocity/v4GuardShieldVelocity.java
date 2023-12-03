@@ -22,7 +22,7 @@ import java.util.logging.Logger;
         version = v4GuardShieldCore.pluginVersion,
         url = "https://v4guard.io",
         description = "v4Guard Account Shield for Minecraft Servers",
-        authors = {"DigitalSynware"},
+        authors = {"v4Guard"},
         dependencies = {
                 @Dependency(id = "v4guard-plugin"),
                 @Dependency(id = "nLogin", optional = true)
