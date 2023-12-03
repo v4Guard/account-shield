@@ -1,5 +1,6 @@
 package io.v4guard.shield.spigot.hooks;
 
+import fr.xephi.authme.events.FailedLoginEvent;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RegisterEvent;
 import io.v4guard.shield.core.auth.AuthType;
@@ -41,4 +42,16 @@ public class AuthMeSpigotHook extends AuthenticationHook implements Listener {
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
     }
 
+
+    @EventHandler
+    public void onWrongPassword(FailedLoginEvent event) {
+        Authentication auth = new Authentication(
+                event.getPlayer().getName(),
+                event.getPlayer().getUniqueId(),
+                AuthType.FAILED,
+                event.getPlayer().hasPermission("v4guard.accshield")
+        );
+
+        v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
+    }
 }

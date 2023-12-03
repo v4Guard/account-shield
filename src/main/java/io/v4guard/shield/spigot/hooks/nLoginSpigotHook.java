@@ -2,6 +2,7 @@ package io.v4guard.shield.spigot.hooks;
 
 import com.nickuc.login.api.event.bukkit.auth.LoginEvent;
 import com.nickuc.login.api.event.bukkit.auth.RegisterEvent;
+import com.nickuc.login.api.event.bukkit.auth.WrongPasswordEvent;
 import io.v4guard.shield.core.auth.AuthType;
 import io.v4guard.shield.core.auth.Authentication;
 import io.v4guard.shield.core.hook.AuthenticationHook;
@@ -41,4 +42,15 @@ public class nLoginSpigotHook extends AuthenticationHook implements Listener {
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
     }
 
+
+    @EventHandler
+    public void onWrongPassword(WrongPasswordEvent event) {
+        Authentication auth = new Authentication(
+                event.getPlayer().getName(),
+                event.getPlayer().getUniqueId(),
+                AuthType.FAILED,
+                event.getPlayer().hasPermission("v4guard.accshield")
+        );
+        v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
+    }
 }

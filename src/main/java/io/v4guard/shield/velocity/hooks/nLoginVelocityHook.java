@@ -2,6 +2,7 @@ package io.v4guard.shield.velocity.hooks;
 
 import com.nickuc.login.api.event.velocity.auth.LoginEvent;
 import com.nickuc.login.api.event.velocity.auth.RegisterEvent;
+import com.nickuc.login.api.event.velocity.auth.WrongPasswordEvent;
 import com.velocitypowered.api.event.Subscribe;
 import io.v4guard.shield.core.auth.AuthType;
 import io.v4guard.shield.core.auth.Authentication;
@@ -35,6 +36,17 @@ public class nLoginVelocityHook extends AuthenticationHook implements Listener {
                 event.getPlayer().getUsername(),
                 event.getPlayer().getUniqueId(),
                 AuthType.REGISTER,
+                event.getPlayer().hasPermission("v4guard.accshield")
+        );
+        v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
+    }
+
+    @Subscribe
+    public void onWrongPassword(WrongPasswordEvent event) {
+        Authentication auth = new Authentication(
+                event.getPlayer().getUsername(),
+                event.getPlayer().getUniqueId(),
+                AuthType.FAILED,
                 event.getPlayer().hasPermission("v4guard.accshield")
         );
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);

@@ -2,6 +2,7 @@ package io.v4guard.shield.bungee.hooks;
 
 import com.nickuc.login.api.event.bungee.auth.LoginEvent;
 import com.nickuc.login.api.event.bungee.auth.RegisterEvent;
+import com.nickuc.login.api.event.bungee.auth.WrongPasswordEvent;
 import io.v4guard.shield.core.auth.AuthType;
 import io.v4guard.shield.core.auth.Authentication;
 import io.v4guard.shield.core.hook.AuthenticationHook;
@@ -40,4 +41,14 @@ public class nLoginBungeeHook extends AuthenticationHook implements Listener {
         v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
     }
 
+    @EventHandler
+    public void onWrongPassword(WrongPasswordEvent event) {
+        Authentication auth = new Authentication(
+                event.getPlayer().getName(),
+                event.getPlayer().getUniqueId(),
+                AuthType.FAILED,
+                event.getPlayer().hasPermission("v4guard.accshield")
+        );
+        v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
+    }
 }
