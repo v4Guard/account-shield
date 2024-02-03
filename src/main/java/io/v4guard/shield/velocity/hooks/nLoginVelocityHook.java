@@ -9,9 +9,8 @@ import io.v4guard.shield.core.auth.Authentication;
 import io.v4guard.shield.core.hook.AuthenticationHook;
 import io.v4guard.shield.core.v4GuardShieldCore;
 import io.v4guard.shield.velocity.v4GuardShieldVelocity;
-import net.md_5.bungee.api.plugin.Listener;
 
-public class nLoginVelocityHook extends AuthenticationHook implements Listener {
+public class nLoginVelocityHook extends AuthenticationHook {
 
     public nLoginVelocityHook(v4GuardShieldVelocity plugin) {
         super("nLogin");
