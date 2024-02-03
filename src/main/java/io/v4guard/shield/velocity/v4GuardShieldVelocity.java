@@ -86,10 +86,10 @@ public class v4GuardShieldVelocity {
     }
 
     private void checkForHooks(){
-        if(this.getServer().getPluginManager().getPlugin("nLogin") != null){
+        if (this.getServer().getPluginManager().getPlugin("nlogin").isPresent()){
             this.authHook = new nLoginVelocityHook(this);
         }
-        if(authHook == null) {
+        if (authHook == null) {
             sendConsoleMessage("§c[v4guard-account-shield] (Velocity) No authentication hooks found.");
             sendConsoleMessage("§c[v4guard-account-shield] (Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
             sendConsoleMessage("§cAvailable hooks: nLogin");
