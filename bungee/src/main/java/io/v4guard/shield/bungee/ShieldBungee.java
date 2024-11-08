@@ -94,9 +94,9 @@ public class ShieldBungee extends Plugin implements UniversalPlugin {
         }
 
         if (this.activeHook == null) {
-            logger.log(Level.SEVERE, "(Velocity) No authentication hooks found.");
-            logger.log(Level.SEVERE, "(Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
-            logger.log(Level.SEVERE, "(Velocity) Available hooks: nLogin, JPremium");
+            logger.log(Level.SEVERE, "(BungeeCord) No authentication hooks found.");
+            logger.log(Level.SEVERE, "(BungeeCord) Register your own hook or install one of these authentication plugins to use account shield:");
+            logger.log(Level.SEVERE, "(BungeeCord) Available hooks: nLogin, JPremium");
         } else {
             logger.info("Hooked into " + this.activeHook.getHookName());
             this.getProxy().getPluginManager().registerListener(this, (Listener) this.activeHook);

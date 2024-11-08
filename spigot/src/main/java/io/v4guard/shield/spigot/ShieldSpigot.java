@@ -28,7 +28,7 @@ public class ShieldSpigot extends JavaPlugin  implements UniversalPlugin {
     private AuthenticationHook activeHook;
     private ShieldCommon shieldCommon;
     private ObjectMapper objectMapper;
-    private final Logger logger = UnifiedLogger.get();
+    private final Logger logger = Logger.getLogger("v4guard-account-shield");
 
     @Override
     public void onEnable() {
@@ -84,11 +84,11 @@ public class ShieldSpigot extends JavaPlugin  implements UniversalPlugin {
         }
 
         if (this.activeHook == null) {
-            logger.log(Level.SEVERE, "(Velocity) No authentication hooks found.");
-            logger.log(Level.SEVERE, "(Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
-            logger.log(Level.SEVERE, "(Velocity) Available hooks: nLogin, Authme");
+            logger.log(Level.SEVERE, "(Spigot) No authentication hooks found.");
+            logger.log(Level.SEVERE, "(Spigot) Register your own hook or install one of these authentication plugins to use account shield:");
+            logger.log(Level.SEVERE, "(Spigot) Available hooks: nLogin, Authme");
         } else {
-            logger.info("Hooked into " + this.activeHook.getHookName());
+            logger.info("(Spigot) Hooked into " + this.activeHook.getHookName());
             this.getServer().getPluginManager().registerEvents((Listener) this.activeHook, this);
         }
     }
