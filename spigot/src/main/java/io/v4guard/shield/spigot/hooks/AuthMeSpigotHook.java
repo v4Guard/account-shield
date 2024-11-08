@@ -1,23 +1,25 @@
 package io.v4guard.shield.spigot.hooks;
 
-import com.nickuc.login.api.event.bukkit.auth.LoginEvent;
-import com.nickuc.login.api.event.bukkit.auth.RegisterEvent;
-import com.nickuc.login.api.event.bukkit.auth.WrongPasswordEvent;
-import io.v4guard.shield.core.auth.AuthType;
-import io.v4guard.shield.core.auth.Authentication;
-import io.v4guard.shield.core.hook.AuthenticationHook;
-import io.v4guard.shield.core.v4GuardShieldCore;
+import fr.xephi.authme.events.FailedLoginEvent;
+import fr.xephi.authme.events.LoginEvent;
+import fr.xephi.authme.events.RegisterEvent;
+import io.v4guard.connector.common.accounts.auth.AuthType;
+import io.v4guard.connector.common.accounts.auth.Authentication;
+import io.v4guard.shield.common.hook.AuthenticationHook;
+import io.v4guard.shield.spigot.ShieldSpigot;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public class nLoginSpigotHook extends AuthenticationHook implements Listener {
+public class AuthMeSpigotHook extends AuthenticationHook implements Listener {
 
-    public nLoginSpigotHook(JavaPlugin plugin) {
-        super("nLogin");
+    private final ShieldSpigot plugin;
+
+    public AuthMeSpigotHook(ShieldSpigot plugin) {
+        super("AuthMe");
+        this.plugin = plugin;
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        Bukkit.getServer().getConsoleSender().sendMessage("§c[v4guard-account-shield] (Spigot) Hooked into nLogin");
+        Bukkit.getServer().getConsoleSender().sendMessage("§c[v4guard-account-shield] (Spigot) Hooked into AuthMe");
     }
 
     @EventHandler
@@ -28,7 +30,7 @@ public class nLoginSpigotHook extends AuthenticationHook implements Listener {
                 AuthType.LOGIN,
                 event.getPlayer().hasPermission("v4guard.accshield")
         );
-        v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
+        plugin.sendPluginMessage(auth);
     }
 
     @EventHandler
@@ -39,18 +41,19 @@ public class nLoginSpigotHook extends AuthenticationHook implements Listener {
                 AuthType.REGISTER,
                 event.getPlayer().hasPermission("v4guard.accshield")
         );
-        v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
+        plugin.sendPluginMessage(auth);
     }
 
 
     @EventHandler
-    public void onWrongPassword(WrongPasswordEvent event) {
+    public void onWrongPassword(FailedLoginEvent event) {
         Authentication auth = new Authentication(
                 event.getPlayer().getName(),
                 event.getPlayer().getUniqueId(),
-                AuthType.FAILED,
+                AuthType.WRONG,
                 event.getPlayer().hasPermission("v4guard.accshield")
         );
-        v4GuardShieldCore.getInstance().getMessager().sendMessage(auth);
+
+        plugin.sendPluginMessage(auth);
     }
 }
