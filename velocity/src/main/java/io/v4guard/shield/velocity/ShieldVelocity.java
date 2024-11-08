@@ -11,7 +11,7 @@ import io.v4guard.connector.common.UnifiedLogger;
 import io.v4guard.shield.api.service.ConnectedCounterService;
 import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.common.ShieldCommon;
-import io.v4guard.shield.common.api.RedisBungeeConnectedCounterService;
+import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
 import io.v4guard.shield.common.hook.AuthenticationHook;
 import io.v4guard.shield.common.mode.ShieldMode;
 import io.v4guard.shield.common.universal.UniversalPlugin;

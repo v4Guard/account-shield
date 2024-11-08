@@ -8,7 +8,7 @@ import io.v4guard.shield.bungee.hooks.nLoginBungeeHook;
 import io.v4guard.shield.bungee.listener.BungeeRedisBungeeListener;
 import io.v4guard.shield.bungee.service.BungeeConnectedCountService;
 import io.v4guard.shield.common.ShieldCommon;
-import io.v4guard.shield.common.api.RedisBungeeConnectedCounterService;
+import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
 import io.v4guard.shield.common.hook.AuthenticationHook;
 import io.v4guard.shield.common.mode.ShieldMode;
 import io.v4guard.shield.common.universal.UniversalPlugin;

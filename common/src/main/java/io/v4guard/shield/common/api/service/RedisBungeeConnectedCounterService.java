@@ -1,16 +1,24 @@
-package io.v4guard.shield.common.api;
+package io.v4guard.shield.common.api.service;
 
-import com.imaginarycode.minecraft.redisbungee.AbstractRedisBungeeAPI;
 import io.v4guard.shield.api.service.ConnectedCounterService;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RedisBungeeConnectedCounterService implements ConnectedCounterService {
 
+    /*
+        Soo RedisBungee does not support getting a list of connected accounts via the API
+        This is a workaround to get the same functionality without doing internal modifications to RedisBungee or
+        rewriting the whole plugin or the backend
+
+        We depend on the Events from RedisBungee to get the connected accounts, and we store them in the map.
+        If the player is not in the map, we add them, if they are in the map, we remove them
+
+        If you know a better way to do this, please open a pull request!!!
+     */
     private final ConcurrentHashMap<InetAddress, Integer> ipAddresses;
 
     public RedisBungeeConnectedCounterService() {

@@ -3,7 +3,7 @@ package io.v4guard.shield.bungee.listener;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.imaginarycode.minecraft.redisbungee.events.PlayerJoinedNetworkEvent;
 import com.imaginarycode.minecraft.redisbungee.events.PlayerLeftNetworkEvent;
-import io.v4guard.shield.common.api.RedisBungeeConnectedCounterService;
+import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;

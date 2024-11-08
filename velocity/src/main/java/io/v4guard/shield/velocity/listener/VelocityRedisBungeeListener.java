@@ -6,7 +6,7 @@ import com.imaginarycode.minecraft.redisbungee.events.PlayerLeftNetworkEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
-import io.v4guard.shield.common.api.RedisBungeeConnectedCounterService;
+import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
 
 public class VelocityRedisBungeeListener {
 
