@@ -1,0 +1,36 @@
+[versions]
+
+#common
+v4guard-connector = "2.5.0"
+jackson-databind = "2.17.1"
+annotations = "24.0.1"
+
+#Authentication plugins
+nlogin = "10.4"
+authme-api = "5.6.1-SNAPSHOT"
+
+#platform specific
+bungeecord = "1.21-R0.1-SNAPSHOT"
+spigot = "1.21.3-R0.1-SNAPSHOT"
+velocity = "3.4.0-SNAPSHOT"
+
+#RedisBungee
+redisbungee = "0.12.5"
+
+[libraries]
+
+v4guard-connector = { group = "io.v4guard", name = "commons", version.ref = "v4guard-connector" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-databind" }
+annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
+
+#authentication plugins
+nlogin = { group = "com.nickuc.login", name = "api", version.ref = "nlogin" }
+authme-api = { group = "fr.xephi", name = "authme", version.ref = "authme-api" }
+
+#platform specific
+spigot = { group = "org.spigotmc", name = "spigot-api", version.ref = "spigot" }
+bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bungeecord"}
+velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
+
+#RedisBungee
+redisbungee-api = { group = "com.github.ProxioDev.ValioBungee", name = "RedisBungee-API", version.ref = "redisbungee" }
