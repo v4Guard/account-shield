@@ -1,4 +1,4 @@
-package io.v4guard.shield.core.mode;
+package io.v4guard.shield.common.mode;
 
 public enum ShieldMode {
 
