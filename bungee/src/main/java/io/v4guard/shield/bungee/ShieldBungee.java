@@ -5,8 +5,10 @@ import io.v4guard.shield.api.service.ConnectedCounterService;
 import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.bungee.hooks.JPremiumBungeeHook;
 import io.v4guard.shield.bungee.hooks.nLoginBungeeHook;
+import io.v4guard.shield.bungee.listener.BungeeRedisBungeeListener;
 import io.v4guard.shield.bungee.service.BungeeConnectedCountService;
 import io.v4guard.shield.common.ShieldCommon;
+import io.v4guard.shield.common.api.RedisBungeeConnectedCounterService;
 import io.v4guard.shield.common.hook.AuthenticationHook;
 import io.v4guard.shield.common.mode.ShieldMode;
 import io.v4guard.shield.common.universal.UniversalPlugin;
@@ -31,13 +33,21 @@ public class ShieldBungee extends Plugin implements UniversalPlugin {
             shieldCommon = new ShieldCommon(ShieldMode.BUNGEE);
 
             if (shieldCommon.getShieldAPI().getConnectedCounterService() == null) {
-                logger.log(Level.SEVERE, "(BungeeCord) Enabling... [ERROR] Registering default connected counter service");
-                shieldCommon.getShieldAPI().setConnectedCounterService(new BungeeConnectedCountService(this));
+                logger.log(Level.WARNING, "(BungeeCord) Registering default connected counter service");
+
+                if (this.isPluginEnabled("RedisBungee")) {
+                    logger.log(Level.INFO, "(BungeeCord) Detected RedisBungee, hooking into it");
+                    RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService();
+                    shieldCommon.getShieldAPI().setConnectedCounterService(redisBungeeConnectedCounterService);
+                    this.getProxy().getPluginManager().registerListener(this, new BungeeRedisBungeeListener(redisBungeeConnectedCounterService));
+                } else {
+                    shieldCommon.getShieldAPI().setConnectedCounterService(new BungeeConnectedCountService(this));
+                }
             }
 
             this.checkForHooks();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "(BungeeCord) Enabling... [ERROR]", e);
+            logger.log(Level.SEVERE, "(BungeeCord) Failed to enable", e);
             return;
         }
 

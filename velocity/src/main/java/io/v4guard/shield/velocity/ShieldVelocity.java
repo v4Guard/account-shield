@@ -11,11 +11,13 @@ import io.v4guard.connector.common.UnifiedLogger;
 import io.v4guard.shield.api.service.ConnectedCounterService;
 import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.common.ShieldCommon;
+import io.v4guard.shield.common.api.RedisBungeeConnectedCounterService;
 import io.v4guard.shield.common.hook.AuthenticationHook;
 import io.v4guard.shield.common.mode.ShieldMode;
 import io.v4guard.shield.common.universal.UniversalPlugin;
 import io.v4guard.shield.velocity.hooks.JPremiumVelocityHook;
 import io.v4guard.shield.velocity.hooks.nLoginVelocityHook;
+import io.v4guard.shield.velocity.listener.VelocityRedisBungeeListener;
 import io.v4guard.shield.velocity.service.VelocityConnectedCounterService;
 
 import java.util.logging.Level;
@@ -31,7 +33,8 @@ import java.util.logging.Logger;
         dependencies = {
                 @Dependency(id = "v4guard-plugin"),
                 @Dependency(id = "nLogin", optional = true),
-                @Dependency(id = "jpremium", optional = true)
+                @Dependency(id = "jpremium", optional = true),
+                @Dependency(id = "redisbnugee", optional = true)
         }
 )
 public class ShieldVelocity implements UniversalPlugin {
@@ -57,8 +60,17 @@ public class ShieldVelocity implements UniversalPlugin {
             shieldCommon = new ShieldCommon(ShieldMode.VELOCITY);
 
             if (shieldCommon.getShieldAPI().getConnectedCounterService() == null) {
-                logger.log(Level.SEVERE, "(Velocity) Enabling... [ERROR] Registering default connected counter service");
-                shieldCommon.getShieldAPI().setConnectedCounterService(new VelocityConnectedCounterService(proxyServer));
+                logger.log(Level.SEVERE, "(Velocity) Enabling... [INFO] Registering default connected counter service");
+
+                if (this.isPluginEnabled("redisbungee")) {
+                    logger.log(Level.SEVERE, "(Velocity) Detected RedisBungee, hooking into it");
+                    RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService();
+                    shieldCommon.getShieldAPI().setConnectedCounterService(redisBungeeConnectedCounterService);
+                    this.getServer().getEventManager().register(this, new VelocityRedisBungeeListener(redisBungeeConnectedCounterService));
+                } else {
+                    logger.log(Level.SEVERE, "(Velocity) Registering default connected counter service");
+                    shieldCommon.getShieldAPI().setConnectedCounterService(new VelocityConnectedCounterService(proxyServer));
+                }
             }
 
             this.checkForHooks();

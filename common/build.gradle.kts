@@ -5,5 +5,4 @@ plugins {
 dependencies {
     api(project(":api"))
     api(libs.v4guard.connector)
-    compileOnly(libs.redisbungee.api)
 }

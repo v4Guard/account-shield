@@ -33,4 +33,5 @@ bungeecord = { group = "net.md-5", name = "bungeecord-api", version.ref = "bunge
 velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
 
 #RedisBungee
-redisbungee-api = { group = "com.github.ProxioDev.ValioBungee", name = "RedisBungee-API", version.ref = "redisbungee" }
+redisbungee-velocity = { group = "com.github.ProxioDev.ValioBungee", name = "RedisBungee-Velocity", version.ref = "redisbungee" }
+redisbungee-bungee = { group = "com.github.ProxioDev.ValioBungee", name = "RedisBungee-Bungee", version.ref = "redisbungee" }
