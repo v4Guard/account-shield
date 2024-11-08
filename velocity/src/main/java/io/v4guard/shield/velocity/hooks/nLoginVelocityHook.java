@@ -3,6 +3,7 @@ package io.v4guard.shield.velocity.hooks;
 import com.nickuc.login.api.event.velocity.auth.LoginEvent;
 import com.nickuc.login.api.event.velocity.auth.RegisterEvent;
 import com.nickuc.login.api.event.velocity.auth.WrongPasswordEvent;
+import com.velocitypowered.api.event.Continuation;
 import com.velocitypowered.api.event.Subscribe;
 import io.v4guard.connector.common.UnifiedLogger;
 import io.v4guard.connector.common.accounts.auth.AuthType;
@@ -23,7 +24,7 @@ public class nLoginVelocityHook extends AuthenticationHook {
     }
 
     @Subscribe
-    public void onLogin(LoginEvent event) {
+    public void onLogin(LoginEvent event, Continuation continuation) {
         Authentication auth = new Authentication(
                 event.getPlayer().getUsername(),
                 event.getPlayer().getUniqueId(),
@@ -31,10 +32,12 @@ public class nLoginVelocityHook extends AuthenticationHook {
                 event.getPlayer().hasPermission("v4guard.accshield")
         );
         plugin.getCommon().sendMessage(auth);
+
+        continuation.resume();
     }
 
     @Subscribe
-    public void onRegister(RegisterEvent event) {
+    public void onRegister(RegisterEvent event, Continuation continuation) {
         Authentication auth = new Authentication(
                 event.getPlayer().getUsername(),
                 event.getPlayer().getUniqueId(),
@@ -43,10 +46,11 @@ public class nLoginVelocityHook extends AuthenticationHook {
         );
 
         plugin.getCommon().sendMessage(auth);
+        continuation.resume();
     }
 
     @Subscribe
-    public void onWrongPassword(WrongPasswordEvent event) {
+    public void onWrongPassword(WrongPasswordEvent event, Continuation continuation) {
         Authentication auth = new Authentication(
                 event.getPlayer().getUsername(),
                 event.getPlayer().getUniqueId(),
@@ -55,6 +59,7 @@ public class nLoginVelocityHook extends AuthenticationHook {
         );
 
         plugin.getCommon().sendMessage(auth);
+        continuation.resume();
     }
 
 }
