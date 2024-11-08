@@ -1,8 +1,6 @@
 package io.v4guard.shield.spigot;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.v4guard.connector.common.UnifiedLogger;
 import io.v4guard.connector.common.accounts.auth.Authentication;
 import io.v4guard.connector.common.constants.ShieldChannels;

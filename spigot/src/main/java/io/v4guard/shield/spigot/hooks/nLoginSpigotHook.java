@@ -10,7 +10,6 @@ import io.v4guard.shield.common.hook.AuthenticationHook;
 import io.v4guard.shield.spigot.ShieldSpigot;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class nLoginSpigotHook extends AuthenticationHook implements Listener {
 
