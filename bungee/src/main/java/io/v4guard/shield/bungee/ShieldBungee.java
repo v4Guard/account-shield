@@ -1,15 +1,17 @@
 package io.v4guard.shield.bungee;
 
-import io.v4guard.connector.common.UnifiedLogger;
 import io.v4guard.shield.api.service.ConnectedCounterService;
 import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.bungee.hooks.JPremiumBungeeHook;
 import io.v4guard.shield.bungee.hooks.nLoginBungeeHook;
 import io.v4guard.shield.bungee.listener.BungeeRedisBungeeListener;
+import io.v4guard.shield.bungee.messenger.BungeePluginMessageProcessor;
 import io.v4guard.shield.bungee.service.BungeeConnectedCountService;
 import io.v4guard.shield.common.ShieldCommon;
 import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
+import io.v4guard.shield.common.constants.ShieldConstants;
 import io.v4guard.shield.common.hook.AuthenticationHook;
+import io.v4guard.shield.common.messenger.PluginMessenger;
 import io.v4guard.shield.common.mode.ShieldMode;
 import io.v4guard.shield.common.universal.UniversalPlugin;
 import net.md_5.bungee.api.ProxyServer;
@@ -20,10 +22,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ShieldBungee extends Plugin implements UniversalPlugin {
+
     private AuthenticationHook activeHook;
     private ShieldCommon shieldCommon;
-    private final Logger logger = UnifiedLogger.get();
-
+    private PluginMessenger messenger;
+    private final Logger logger = getLogger();
 
     @Override
     public void onEnable() {
@@ -51,6 +54,13 @@ public class ShieldBungee extends Plugin implements UniversalPlugin {
             return;
         }
 
+        BungeePluginMessageProcessor bungeeMessenger = new BungeePluginMessageProcessor(shieldCommon);
+        this.messenger = bungeeMessenger;
+        getProxy().getPluginManager().registerListener(this, bungeeMessenger);
+
+        getServer().registerChannel(ShieldConstants.LEGACY_PLUGIN_MESSAGE_CHANNEL);
+        getServer().registerChannel(ShieldConstants.MODERN_PLUGIN_MESSAGE_CHANNEL);
+
         logger.info("Enabling... [DONE]");
     }
 
@@ -77,6 +87,11 @@ public class ShieldBungee extends Plugin implements UniversalPlugin {
     @Override
     public AuthenticationHook getActiveAuthenticationHook() {
         return activeHook;
+    }
+
+    @Override
+    public PluginMessenger getMessenger() {
+        return messenger;
     }
 
     @Override

@@ -7,21 +7,28 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import io.v4guard.connector.common.UnifiedLogger;
+import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
+import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
+import io.v4guard.connector.common.CoreInstance;
 import io.v4guard.shield.api.service.ConnectedCounterService;
 import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.common.ShieldCommon;
 import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
+import io.v4guard.shield.common.constants.ShieldConstants;
 import io.v4guard.shield.common.hook.AuthenticationHook;
+import io.v4guard.shield.common.messenger.PluginMessenger;
 import io.v4guard.shield.common.mode.ShieldMode;
 import io.v4guard.shield.common.universal.UniversalPlugin;
 import io.v4guard.shield.velocity.hooks.JPremiumVelocityHook;
 import io.v4guard.shield.velocity.hooks.nLoginVelocityHook;
 import io.v4guard.shield.velocity.listener.VelocityRedisBungeeListener;
+import io.v4guard.shield.velocity.messenger.VelocityPluginMessageProcessor;
 import io.v4guard.shield.velocity.service.VelocityConnectedCounterService;
+import org.slf4j.Logger;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+
 
 @Plugin(
         id = "v4guard-account-shield",
@@ -32,7 +39,7 @@ import java.util.logging.Logger;
         authors = {"v4Guard"},
         dependencies = {
                 @Dependency(id = "v4guard-plugin"),
-                @Dependency(id = "nLogin", optional = true),
+                @Dependency(id = "nlogin", optional = true),
                 @Dependency(id = "jpremium", optional = true),
                 @Dependency(id = "redisbnugee", optional = true)
         }
@@ -42,13 +49,21 @@ public class ShieldVelocity implements UniversalPlugin {
     private AuthenticationHook activeHook;
     private ShieldCommon shieldCommon;
     private final ProxyServer proxyServer;
-    private final Logger logger = UnifiedLogger.get();
+    private PluginMessenger messenger;
+    private final Logger logger;
+
+    public static final List<ChannelIdentifier> IDENTIFIERS = List.of(
+            new LegacyChannelIdentifier(ShieldConstants.LEGACY_PLUGIN_MESSAGE_CHANNEL),
+            MinecraftChannelIdentifier.from(ShieldConstants.MODERN_PLUGIN_MESSAGE_CHANNEL)
+    );
 
     @Inject
     public ShieldVelocity(
-            ProxyServer proxyServer
+            ProxyServer proxyServer,
+            Logger logger
     ) {
         this.proxyServer = proxyServer;
+        this.logger = logger;
     }
 
 
@@ -60,25 +75,29 @@ public class ShieldVelocity implements UniversalPlugin {
             shieldCommon = new ShieldCommon(ShieldMode.VELOCITY);
 
             if (shieldCommon.getShieldAPI().getConnectedCounterService() == null) {
-                logger.log(Level.SEVERE, "(Velocity) Enabling... [INFO] Registering default connected counter service");
+                logger.warn("(Velocity) Registering default connected counter service");
 
                 if (this.isPluginEnabled("redisbungee")) {
-                    logger.log(Level.SEVERE, "(Velocity) Detected RedisBungee, hooking into it");
+                    logger.info("(Velocity) Detected RedisBungee, hooking into it");
                     RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService();
                     shieldCommon.getShieldAPI().setConnectedCounterService(redisBungeeConnectedCounterService);
                     this.getServer().getEventManager().register(this, new VelocityRedisBungeeListener(redisBungeeConnectedCounterService));
                 } else {
-                    logger.log(Level.SEVERE, "(Velocity) Registering default connected counter service");
+                    logger.info("(Velocity) Registering default connected counter service (single)");
                     shieldCommon.getShieldAPI().setConnectedCounterService(new VelocityConnectedCounterService(proxyServer));
                 }
             }
 
             this.checkForHooks();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "(Velocity) Enabling... [ERROR]", e);
+            logger.error("(Velocity) Enabling... [ERROR]", e);
             return;
         }
 
+        IDENTIFIERS.forEach(getServer().getChannelRegistrar()::register);
+        messenger = new VelocityPluginMessageProcessor(shieldCommon);
+
+        getServer().getEventManager().register(this, messenger);
         logger.info("Enabling... [DONE]");
     }
 
@@ -108,6 +127,11 @@ public class ShieldVelocity implements UniversalPlugin {
     }
 
     @Override
+    public PluginMessenger getMessenger() {
+        return messenger;
+    }
+
+    @Override
     public boolean isPluginEnabled(String pluginName) {
         return this.proxyServer.getPluginManager().isLoaded(pluginName);
     }
@@ -122,11 +146,12 @@ public class ShieldVelocity implements UniversalPlugin {
         }
 
         if (this.activeHook == null) {
-            logger.log(Level.SEVERE, "(Velocity) No authentication hooks found.");
-            logger.log(Level.SEVERE, "(Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
-            logger.log(Level.SEVERE, "(Velocity) Available hooks: nLogin, JPremium");
+            logger.error("(Velocity) No authentication hooks found.");
+            logger.error("(Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
+            logger.error("(Velocity) Available hooks: nLogin, JPremium");
         } else {
-            logger.info("Hooked into " + this.activeHook.getHookName());
+            CoreInstance.get().setAccountShieldFound(true);
+            logger.info("(Velocity) Hooked into {}", this.activeHook.getHookName());
             this.proxyServer.getEventManager().register(this, this.activeHook);
         }
     }
