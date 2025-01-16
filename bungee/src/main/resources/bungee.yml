@@ -1,0 +1,10 @@
+name: v4guard-account-shield
+version: 2.5.0
+main: io.v4guard.shield.bungee.ShieldBungee
+author: v4Guard
+depends:
+  - v4guard-plugin
+softdepend:
+  - nLogin
+  - JPremium
+  - RedisBungee
