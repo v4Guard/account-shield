@@ -1,25 +1,25 @@
 package io.v4guard.shield.spigot;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.v4guard.connector.common.UnifiedLogger;
-import io.v4guard.connector.common.accounts.auth.Authentication;
-import io.v4guard.connector.common.constants.ShieldChannels;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import io.v4guard.shield.api.service.ConnectedCounterService;
 import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.common.ShieldCommon;
+import io.v4guard.shield.common.constants.ShieldConstants;
 import io.v4guard.shield.common.hook.AuthenticationHook;
+import io.v4guard.shield.common.messenger.PluginMessenger;
 import io.v4guard.shield.common.mode.ShieldMode;
 import io.v4guard.shield.common.universal.UniversalPlugin;
 import io.v4guard.shield.spigot.hooks.AuthMeSpigotHook;
 import io.v4guard.shield.spigot.hooks.nLoginSpigotHook;
+import io.v4guard.shield.spigot.model.Authentication;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +45,8 @@ public class ShieldSpigot extends JavaPlugin  implements UniversalPlugin {
             return;
         }
 
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, ShieldConstants.MODERN_PLUGIN_MESSAGE_CHANNEL);
+
         logger.info("Enabling... [DONE]");
     }
 
@@ -67,6 +69,11 @@ public class ShieldSpigot extends JavaPlugin  implements UniversalPlugin {
     @Override
     public AuthenticationHook getActiveAuthenticationHook() {
         return activeHook;
+    }
+
+    @Override
+    public PluginMessenger getMessenger() {
+        throw new UnsupportedOperationException("Spigot cannot parse plugin messages");
     }
 
     @Override
@@ -95,19 +102,19 @@ public class ShieldSpigot extends JavaPlugin  implements UniversalPlugin {
 
 
     public void sendPluginMessage(Authentication auth) {
-        Player player = Bukkit.getPlayer(auth.getUsername());
+        Player player = Bukkit.getPlayerExact(auth.getUsername());
         if (player == null) return;
 
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
         try {
-            out.writeUTF(objectMapper.convertValue(auth, Authentication.class).toString());
+            out.writeUTF(objectMapper.writeValueAsString(auth));
             player.sendPluginMessage(this,
-                    ShieldChannels.BUNGEE_CHANNEL,
-                    b.toByteArray()
+                    ShieldConstants.MODERN_PLUGIN_MESSAGE_CHANNEL,
+                    out.toByteArray()
             );
-        } catch (IOException e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
     }
 }
