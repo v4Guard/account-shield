@@ -3,10 +3,10 @@ package io.v4guard.shield.spigot.hooks;
 import fr.xephi.authme.events.FailedLoginEvent;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RegisterEvent;
-import io.v4guard.connector.common.accounts.auth.AuthType;
-import io.v4guard.connector.common.accounts.auth.Authentication;
 import io.v4guard.shield.common.hook.AuthenticationHook;
 import io.v4guard.shield.spigot.ShieldSpigot;
+import io.v4guard.shield.spigot.model.AuthType;
+import io.v4guard.shield.spigot.model.Authentication;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,8 +18,6 @@ public class AuthMeSpigotHook extends AuthenticationHook implements Listener {
     public AuthMeSpigotHook(ShieldSpigot plugin) {
         super("AuthMe");
         this.plugin = plugin;
-        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        Bukkit.getServer().getConsoleSender().sendMessage("§c[v4guard-account-shield] (Spigot) Hooked into AuthMe");
     }
 
     @EventHandler
