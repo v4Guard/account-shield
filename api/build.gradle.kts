@@ -4,6 +4,10 @@ plugins {
 }
 
 
+dependencies {
+    api(libs.annotations)
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {

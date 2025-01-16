@@ -1,5 +1,6 @@
 plugins {
     id("account-shield.common-conventions")
+    id("account-shield.shadow-conventions")
 }
 
 dependencies {

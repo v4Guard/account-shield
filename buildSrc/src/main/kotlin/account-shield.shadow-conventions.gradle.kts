@@ -6,13 +6,13 @@ plugins {
 tasks {
     shadowJar {
         destinationDirectory.set(file("$rootDir/out"))
-        archiveFileName.set("v4Guard-${project.name}-${project.version}.jar")
+        archiveFileName.set("v4Guard-account-shield-${project.name}-${project.version}.jar")
 
         val prefix = "io.v4guard.shield.libs"
 
         //realocations for shadowJar
         listOf(
-            "org.json", "org.checkerframework", "com.fasterxml.jackson",
+            "org.json", "org.checkerframework", "com.fasterxml.jackson", "org.intellij.lang.annotations", "org.jetbrains.annotations"
         ).forEach { relocate(it, "${prefix}.$it") }
     }
 
