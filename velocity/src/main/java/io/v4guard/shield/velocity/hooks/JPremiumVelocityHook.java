@@ -1,7 +1,6 @@
 package io.v4guard.shield.velocity.hooks;
 
 import com.jakub.jpremium.proxy.api.event.velocity.UserEvent;
-import com.jakub.jpremium.proxy.api.user.User;
 import com.velocitypowered.api.event.Continuation;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.proxy.Player;
@@ -29,9 +28,10 @@ public class JPremiumVelocityHook extends AuthenticationHook {
             Authentication auth = new Authentication(
                     p.getUsername(),
                     p.getUniqueId(),
-                    AuthType.LOGIN,
+                    event.getUserProfile().isPremium() ? AuthType.MOJANG : AuthType.LOGIN,
                     p.hasPermission("v4guard.accshield")
             );
+
             plugin.getCommon().sendMessage(auth);
         });
 
@@ -68,6 +68,7 @@ public class JPremiumVelocityHook extends AuthenticationHook {
             );
             plugin.getCommon().sendMessage(auth);
         });
+
         continuation.resume();
 
     }

@@ -28,7 +28,7 @@ public class JPremiumBungeeHook extends AuthenticationHook implements Listener {
         Authentication auth = new Authentication(
                 proxiedPlayer.getName(),
                 proxiedPlayer.getUniqueId(),
-                AuthType.LOGIN,
+                event.getUserProfile().isPremium() ? AuthType.MOJANG : AuthType.LOGIN,
                 proxiedPlayer.hasPermission("v4guard.accshield")
         );
 
@@ -38,6 +38,8 @@ public class JPremiumBungeeHook extends AuthenticationHook implements Listener {
     @EventHandler
     public void onUserEvent(UserEvent.Register event) {
         ProxiedPlayer proxiedPlayer = plugin.getProxy().getPlayer(event.getUserProfile().getUniqueId());
+        if (proxiedPlayer == null) return;
+
         Authentication auth = new Authentication(
                 proxiedPlayer.getName(),
                 proxiedPlayer.getUniqueId(),
@@ -51,6 +53,8 @@ public class JPremiumBungeeHook extends AuthenticationHook implements Listener {
     @EventHandler
     public void onUserEvent(UserEvent.FailedLogin event) {
         ProxiedPlayer proxiedPlayer = plugin.getProxy().getPlayer(event.getUserProfile().getUniqueId());
+        if (proxiedPlayer == null) return;
+
         Authentication auth = new Authentication(
                 proxiedPlayer.getName(),
                 proxiedPlayer.getUniqueId(),
