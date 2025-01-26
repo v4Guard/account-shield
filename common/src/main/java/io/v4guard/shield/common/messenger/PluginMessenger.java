@@ -1,7 +1,7 @@
 package io.v4guard.shield.common.messenger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.v4guard.connector.common.accounts.auth.Authentication;
+import io.v4guard.shield.api.auth.Authentication;
 import io.v4guard.shield.common.ShieldCommon;
 
 import java.io.ByteArrayInputStream;

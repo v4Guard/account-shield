@@ -8,6 +8,8 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
 
+import java.net.InetAddress;
+
 public class VelocityRedisBungeeListener {
 
     private final RedisBungeeConnectedCounterService redisBungeeListener;
@@ -29,12 +31,17 @@ public class VelocityRedisBungeeListener {
 
     @Subscribe
     public void onRedisBungeePlayerJoin(PlayerJoinedNetworkEvent event) {
-        redisBungeeListener.add(redisBungeeAPI.getPlayerIp(event.getUuid()));
+        InetAddress address = redisBungeeAPI.getPlayerIp(event.getUuid());
+        if (address == null) return;
+
+        redisBungeeListener.add(address);
     }
 
     @Subscribe
     public void onRedisBungeePlayerQuit(PlayerLeftNetworkEvent event) {
-        redisBungeeListener.remove(redisBungeeAPI.getPlayerIp(event.getUuid()));
+        InetAddress address = redisBungeeAPI.getPlayerIp(event.getUuid());
+        if (address == null) return;
+        redisBungeeListener.remove(address);
     }
 
 }

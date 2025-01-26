@@ -3,11 +3,11 @@ package io.v4guard.shield.spigot.hooks;
 import fr.xephi.authme.events.FailedLoginEvent;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RegisterEvent;
-import io.v4guard.shield.common.hook.AuthenticationHook;
+import io.v4guard.shield.api.hook.AuthenticationHook;
 import io.v4guard.shield.spigot.ShieldSpigot;
-import io.v4guard.shield.spigot.model.AuthType;
-import io.v4guard.shield.spigot.model.Authentication;
-import org.bukkit.Bukkit;
+import io.v4guard.shield.api.auth.AuthType;
+import io.v4guard.shield.api.auth.Authentication;
+import io.v4guard.shield.spigot.adapter.SpigotAdapter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -22,36 +22,23 @@ public class AuthMeSpigotHook extends AuthenticationHook implements Listener {
 
     @EventHandler
     public void onLogin(LoginEvent event) {
-        Authentication auth = new Authentication(
-                event.getPlayer().getName(),
-                event.getPlayer().getUniqueId(),
-                AuthType.LOGIN,
-                event.getPlayer().hasPermission("v4guard.accshield")
-        );
-        plugin.sendPluginMessage(auth);
+        SpigotAdapter player = new SpigotAdapter(event.getPlayer());
+        Authentication authentication = prepareAuthentication(player, AuthType.LOGIN);
+        plugin.sendAuthenticationData(authentication);
     }
 
     @EventHandler
     public void onRegister(RegisterEvent event) {
-        Authentication auth = new Authentication(
-                event.getPlayer().getName(),
-                event.getPlayer().getUniqueId(),
-                AuthType.REGISTER,
-                event.getPlayer().hasPermission("v4guard.accshield")
-        );
-        plugin.sendPluginMessage(auth);
+        SpigotAdapter player = new SpigotAdapter(event.getPlayer());
+        Authentication authentication = prepareAuthentication(player, AuthType.REGISTER);
+        plugin.sendAuthenticationData(authentication);
     }
 
 
     @EventHandler
     public void onWrongPassword(FailedLoginEvent event) {
-        Authentication auth = new Authentication(
-                event.getPlayer().getName(),
-                event.getPlayer().getUniqueId(),
-                AuthType.WRONG,
-                event.getPlayer().hasPermission("v4guard.accshield")
-        );
-
-        plugin.sendPluginMessage(auth);
+        SpigotAdapter player = new SpigotAdapter(event.getPlayer());
+        Authentication authentication = prepareAuthentication(player, AuthType.WRONG);
+        plugin.sendAuthenticationData(authentication);
     }
 }

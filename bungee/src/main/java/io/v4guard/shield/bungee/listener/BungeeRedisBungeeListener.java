@@ -9,6 +9,7 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class BungeeRedisBungeeListener implements Listener {
@@ -32,11 +33,16 @@ public class BungeeRedisBungeeListener implements Listener {
 
     @EventHandler
     public void onRedisBungeePlayerJoin(PlayerJoinedNetworkEvent event) {
+        InetAddress address = redisBungeeAPI.getPlayerIp(event.getUuid());
+        if (address == null) return;
+
         redisBungeeListener.add(redisBungeeAPI.getPlayerIp(event.getUuid()));
     }
 
     @EventHandler
     public void onRedisBungeePlayerQuit(PlayerLeftNetworkEvent event) {
-        redisBungeeListener.remove(redisBungeeAPI.getPlayerIp(event.getUuid()));
+        InetAddress address = redisBungeeAPI.getPlayerIp(event.getUuid());
+        if (address == null) return;
+        redisBungeeListener.remove(address);
     }
 }

@@ -1,4 +1,4 @@
-package io.v4guard.shield.spigot.model;
+package io.v4guard.shield.api.auth;
 
 import java.util.UUID;
 

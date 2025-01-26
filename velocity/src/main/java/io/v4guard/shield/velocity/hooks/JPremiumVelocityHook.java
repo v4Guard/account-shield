@@ -4,10 +4,12 @@ import com.jakub.jpremium.proxy.api.event.velocity.UserEvent;
 import com.velocitypowered.api.event.Continuation;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.proxy.Player;
-import io.v4guard.connector.common.accounts.auth.AuthType;
-import io.v4guard.connector.common.accounts.auth.Authentication;
-import io.v4guard.shield.common.hook.AuthenticationHook;
+import io.v4guard.shield.api.adapter.PlayerAdapter;
+import io.v4guard.shield.api.auth.AuthType;
+import io.v4guard.shield.api.auth.Authentication;
+import io.v4guard.shield.api.hook.AuthenticationHook;
 import io.v4guard.shield.velocity.ShieldVelocity;
+import io.v4guard.shield.velocity.adapter.VelocityPlayerAdapter;
 
 import java.util.Optional;
 
@@ -22,17 +24,16 @@ public class JPremiumVelocityHook extends AuthenticationHook {
 
     @Subscribe
     public void onPlayerLogin(UserEvent.Login event, Continuation continuation) {
-        Optional<Player> player = plugin.getServer().getPlayer(event.getUserProfile().getUniqueId());
+        Optional<Player> foundPlayer = plugin.getServer().getPlayer(event.getUserProfile().getUniqueId());
 
-        player.ifPresent(p -> {
-            Authentication auth = new Authentication(
-                    p.getUsername(),
-                    p.getUniqueId(),
-                    event.getUserProfile().isPremium() ? AuthType.MOJANG : AuthType.LOGIN,
-                    p.hasPermission("v4guard.accshield")
+        foundPlayer.ifPresent(p -> {
+            PlayerAdapter player = new VelocityPlayerAdapter(p);
+            Authentication auth = prepareAuthentication(
+                    player,
+                    event.getUserProfile().isPremium() ? AuthType.MOJANG : AuthType.LOGIN
             );
 
-            plugin.getCommon().sendMessage(auth);
+            plugin.sendAuthenticationData(auth);
         });
 
         continuation.resume();
@@ -40,16 +41,16 @@ public class JPremiumVelocityHook extends AuthenticationHook {
 
     @Subscribe
     public void onPlayerRegister(UserEvent.Register event, Continuation continuation) {
-        Optional<Player> player = plugin.getServer().getPlayer(event.getUserProfile().getUniqueId());
+        Optional<Player> foundPlayer = plugin.getServer().getPlayer(event.getUserProfile().getUniqueId());
 
-        player.ifPresent(p -> {
-            Authentication auth = new Authentication(
-                    p.getUsername(),
-                    p.getUniqueId(),
-                    AuthType.REGISTER,
-                    p.hasPermission("v4guard.accshield")
+        foundPlayer.ifPresent(p -> {
+            PlayerAdapter player = new VelocityPlayerAdapter(p);
+            Authentication auth = prepareAuthentication(
+                    player,
+                    AuthType.REGISTER
             );
-            plugin.getCommon().sendMessage(auth);
+
+            plugin.sendAuthenticationData(auth);
         });
 
         continuation.resume();
@@ -57,16 +58,16 @@ public class JPremiumVelocityHook extends AuthenticationHook {
 
     @Subscribe
     public void onPlayerWrongPassword(UserEvent.FailedLogin event, Continuation continuation) {
-        Optional<Player> player = plugin.getServer().getPlayer(event.getUserProfile().getUniqueId());
+        Optional<Player> foundPlayer = plugin.getServer().getPlayer(event.getUserProfile().getUniqueId());
 
-        player.ifPresent(p -> {
-            Authentication auth = new Authentication(
-                    p.getUsername(),
-                    p.getUniqueId(),
-                    AuthType.WRONG,
-                    p.hasPermission("v4guard.accshield")
+        foundPlayer.ifPresent(p -> {
+            PlayerAdapter player = new VelocityPlayerAdapter(p);
+            Authentication auth = prepareAuthentication(
+                    player,
+                    AuthType.WRONG
             );
-            plugin.getCommon().sendMessage(auth);
+
+            plugin.sendAuthenticationData(auth);
         });
 
         continuation.resume();
