@@ -10,7 +10,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import io.v4guard.connector.common.CoreInstance;
 import io.v4guard.shield.api.ShieldAPI;
 import io.v4guard.shield.api.auth.Authentication;
 import io.v4guard.shield.api.service.ConnectedCounterService;
@@ -150,7 +149,6 @@ public class ShieldVelocity implements UniversalPlugin {
             throw new IllegalArgumentException("The hook is not registered");
         }
 
-        CoreInstance.get().setAccountShieldFound(true);
         this.logger.info("Unregistered authentication hook: {}", hook.getHookName());
         this.proxyServer.getEventManager().unregisterListener(this, hook);
         this.activeHook = null;
