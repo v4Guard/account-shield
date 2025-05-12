@@ -19,7 +19,7 @@ redisbungee = "0.12.5"
 
 [libraries]
 
-v4guard-connector = { group = "io.v4guard", name = "api", version.ref = "v4guard-connector" }
+v4guard-connector = { group = "io.v4guard.connector", name = "api", version.ref = "v4guard-connector" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson-databind" }
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 
