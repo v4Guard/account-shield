@@ -12,14 +12,16 @@ import io.v4guard.shield.api.platform.ShieldPlatform;
 public class ShieldCommon {
 
     private ShieldAPI shieldAPI;
-    private final ConnectorAPI connectorAPI;
+    private ConnectorAPI connectorAPI;
     private final ShieldPlatform shieldPlatform;
     private final ObjectMapper objectMapper;
 
     public ShieldCommon(ShieldPlatform platform) {
         this.shieldPlatform = platform;
         this.objectMapper = new ObjectMapper();
-        this.connectorAPI = v4GuardConnectorProvider.get();
+        if (shieldPlatform != ShieldPlatform.SPIGOT) {
+            this.connectorAPI = v4GuardConnectorProvider.get();
+        }
     }
 
     public void registerShieldAPI(ShieldAPI shieldAPI) {
@@ -41,10 +43,11 @@ public class ShieldCommon {
 
     public void sendMessage(Authentication auth) {
         if (!connectorAPI.getConnection().isReady()) return;
-        // ! todo check if module settings is active
+        if (!connectorAPI.getActiveSettings().getActiveAddons().get("accshield")) return;
+
         connectorAPI.getConnection().send(
                 "accshield:login",
-                objectMapper.convertValue(auth, ObjectNode.class)
+                objectMapper.convertValue(auth, ObjectNode.class).toString()
         );
     }
 
