@@ -182,19 +182,19 @@ public class ShieldVelocity implements UniversalPlugin {
 
     private void checkForHooks() {
         if (this.isPluginEnabled("nlogin")) {
-            this.activeHook = new nLoginVelocityHook(this);
+            this.registerAuthHook(new nLoginVelocityHook(this));
+            return;
         }
 
         if (this.isPluginEnabled("jpremium")) {
-            this.activeHook = new JPremiumVelocityHook(this);
+            this.registerAuthHook(new JPremiumVelocityHook(this));
+            return;
         }
 
         if (this.activeHook == null) {
             logger.error("(Velocity) No authentication hooks found.");
             logger.error("(Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
             logger.error("(Velocity) Available hooks: nLogin, JPremium");
-        } else {
-            this.registerAuthHook(this.activeHook);
         }
     }
 }
