@@ -1,8 +1,9 @@
 package io.v4guard.shield.bungee.listener;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
-import com.imaginarycode.minecraft.redisbungee.events.PlayerJoinedNetworkEvent;
-import com.imaginarycode.minecraft.redisbungee.events.PlayerLeftNetworkEvent;
+import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
+import io.v4guard.shield.bungee.ShieldBungee;
 import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -13,36 +14,54 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class BungeeRedisBungeeListener implements Listener {
-
+    private final ShieldBungee plugin;
     private final RedisBungeeConnectedCounterService redisBungeeListener;
     private final RedisBungeeAPI redisBungeeAPI = RedisBungeeAPI.getRedisBungeeApi();
 
-    public BungeeRedisBungeeListener(RedisBungeeConnectedCounterService redisBungeeListener) {
+    public BungeeRedisBungeeListener(ShieldBungee plugin, RedisBungeeConnectedCounterService redisBungeeListener) {
+        this.plugin = plugin;
         this.redisBungeeListener = redisBungeeListener;
     }
 
     @EventHandler
     public void onPlayerJoin(PostLoginEvent event) {
-        redisBungeeListener.add(((InetSocketAddress) event.getPlayer().getSocketAddress()).getAddress());
+        InetAddress ip = ((InetSocketAddress) event.getPlayer().getSocketAddress()).getAddress();
+
+        redisBungeeAPI.sendChannelMessage(
+                "accshield",
+                getMessage("join",
+                        event.getPlayer().getName(),
+                        ip.getHostAddress()
+                ));
+        redisBungeeListener.add(ip, event.getPlayer().getName());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerDisconnectEvent event) {
-        redisBungeeListener.remove(((InetSocketAddress) event.getPlayer().getSocketAddress()).getAddress());
+        InetAddress ip = ((InetSocketAddress) event.getPlayer().getSocketAddress()).getAddress();
+
+        redisBungeeAPI.sendChannelMessage(
+                "accshield",
+                getMessage("quit",
+                        event.getPlayer().getName(),
+                        ip.getHostAddress()
+                ));
+        redisBungeeListener.remove(ip, event.getPlayer().getName());
     }
 
     @EventHandler
-    public void onRedisBungeePlayerJoin(PlayerJoinedNetworkEvent event) {
-        InetAddress address = redisBungeeAPI.getPlayerIp(event.getUuid());
-        if (address == null) return;
-
-        redisBungeeListener.add(redisBungeeAPI.getPlayerIp(event.getUuid()));
+    public void onMessage(PubSubMessageEvent event) {
+        if (event.getChannel().equals("accshield")) {
+            redisBungeeListener.handleMessage(event.getMessage());
+        }
     }
 
-    @EventHandler
-    public void onRedisBungeePlayerQuit(PlayerLeftNetworkEvent event) {
-        InetAddress address = redisBungeeAPI.getPlayerIp(event.getUuid());
-        if (address == null) return;
-        redisBungeeListener.remove(address);
+    private String getMessage(String type, String name, String ip) {
+        ObjectNode data = plugin.getCommon().getObjectMapper().createObjectNode();
+        data.put("type", type);
+        data.put("name", name);
+        data.put("ip", ip);
+        return data.toString();
     }
+
 }

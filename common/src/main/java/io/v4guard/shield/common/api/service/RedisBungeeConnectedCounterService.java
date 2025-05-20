@@ -1,10 +1,13 @@
 package io.v4guard.shield.common.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.v4guard.shield.api.service.ConnectedCounterService;
+import io.v4guard.shield.common.ShieldCommon;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collection;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RedisBungeeConnectedCounterService implements ConnectedCounterService {
@@ -19,9 +22,11 @@ public class RedisBungeeConnectedCounterService implements ConnectedCounterServi
 
         If you know a better way to do this, please open a pull request!!!
      */
-    private final ConcurrentHashMap<InetAddress, Integer> ipAddresses;
+    private final ConcurrentHashMap<InetAddress, Set<String>> ipAddresses;
+    private final ShieldCommon shieldCommon;
 
-    public RedisBungeeConnectedCounterService() {
+    public RedisBungeeConnectedCounterService(ShieldCommon shieldCommon) {
+        this.shieldCommon = shieldCommon;
         ipAddresses = new ConcurrentHashMap<>();
     }
 
@@ -43,14 +48,18 @@ public class RedisBungeeConnectedCounterService implements ConnectedCounterServi
 
     @Override
     public int getConnectedAccounts(InetAddress ipAddress) {
-        return ipAddresses.getOrDefault(ipAddress, 0);
+        Set<String> accounts = ipAddresses.get(ipAddress);
+        if (accounts == null) return 0;
+        return accounts.size();
     }
 
     @Override
     public int getConnectedAccounts(String ipAddress) {
         try {
             InetAddress address = InetAddress.getByName(ipAddress);
-            return ipAddresses.getOrDefault(address, 0);
+            Set<String> accounts = ipAddresses.get(address);
+            if (accounts == null) return 0;
+            return accounts.size();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -58,31 +67,67 @@ public class RedisBungeeConnectedCounterService implements ConnectedCounterServi
         return 0;
     }
 
-    public void add(InetAddress ipAddress) {
-        int value = ipAddresses.getOrDefault(ipAddress, 0);
+    public void add(InetAddress ipAddress, String account) {
+        Set<String> accounts = ipAddresses.getOrDefault(ipAddress, new HashSet<>());
 
-        ipAddresses.put(ipAddress, value+ 1);
+        accounts.add(account);
+        ipAddresses.put(ipAddress, accounts);
     }
 
 
-    public void remove(InetAddress ipAddress) {
-        int value = ipAddresses.getOrDefault(ipAddress, 0) - 1;
+    public void remove(InetAddress ipAddress, String account) {
+        Set<String> accounts = ipAddresses.get(ipAddress);
 
-        if (value <= 0) {
-            ipAddresses.remove(ipAddress);
-            return;
+        if (accounts == null) return;
+
+        accounts.remove(account);
+        ipAddresses.put(ipAddress, accounts);
+    }
+
+    public void handleMessage(String message) {
+        try {
+            JsonNode data = shieldCommon.getObjectMapper().readTree(message);
+
+            String type = data.get("type").asText();
+            String name = data.get("name").asText();
+            String ip = data.get("ip").asText();
+            InetAddress address = InetAddress.getByName(ip);
+            Set<String> accounts = ipAddresses.getOrDefault(address, new HashSet<>());
+
+            if (type.equals("join")) {
+                accounts.add(name);
+                ipAddresses.put(address, accounts);
+            } else if (type.equals("quit")) {
+                accounts.remove(name);
+                ipAddresses.put(address, accounts);
+            }
+
+        } catch (JsonProcessingException | UnknownHostException e) {
+            e.printStackTrace();
         }
 
-        ipAddresses.put(ipAddress, value);
     }
+
 
     @Override
     public Collection<String> getConnectedAccounts(InetAddress ipAddress, int limit) {
-        throw new UnsupportedOperationException("RedisBungee does not support getting a list of connected accounts");
+        Set<String> accounts = ipAddresses.get(ipAddress);
+        if (accounts == null) return Collections.emptyList();
+
+        return accounts.stream().limit(limit).toList();
     }
 
     @Override
     public Collection<String> getConnectedAccounts(String ipAddress, int limit) {
-        throw new UnsupportedOperationException("RedisBungee does not support getting a list of connected accounts");
+        try {
+            InetAddress address = InetAddress.getByName(ipAddress);
+            Set<String> accounts = ipAddresses.get(address);
+            if (accounts == null) return Collections.emptyList();
+
+            return accounts.stream().limit(limit).toList();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 }

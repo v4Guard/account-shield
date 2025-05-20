@@ -24,6 +24,7 @@ import io.v4guard.shield.api.platform.ShieldPlatform;
 import io.v4guard.shield.common.universal.UniversalPlugin;
 import io.v4guard.shield.velocity.hooks.JPremiumVelocityHook;
 import io.v4guard.shield.velocity.hooks.nLoginVelocityHook;
+import io.v4guard.shield.velocity.listener.JoinListener;
 import io.v4guard.shield.velocity.listener.VelocityRedisBungeeListener;
 import io.v4guard.shield.velocity.messenger.VelocityPluginMessageProcessor;
 import io.v4guard.shield.velocity.service.VelocityConnectedCounterService;
@@ -85,13 +86,14 @@ public class ShieldVelocity implements UniversalPlugin {
 
                 if (this.isPluginEnabled("redisbungee")) {
                     logger.info("(Velocity) Detected RedisBungee, hooking into it");
-                    RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService();
+                    RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService(this.getCommon());
                     this.connectedCounterService = redisBungeeConnectedCounterService;
-                    this.getServer().getEventManager().register(this, new VelocityRedisBungeeListener(redisBungeeConnectedCounterService));
+                    this.getServer().getEventManager().register(this, new VelocityRedisBungeeListener(this,redisBungeeConnectedCounterService));
                 } else {
                     logger.info("(Velocity) Registering default connected counter service (single)");
                     this.connectedCounterService = new VelocityConnectedCounterService(proxyServer);
                 }
+                this.getServer().getEventManager().register(this, new JoinListener(this,connectedCounterService));
             }
 
             this.checkForHooks();

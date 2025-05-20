@@ -7,6 +7,7 @@ import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.bungee.hooks.JPremiumBungeeHook;
 import io.v4guard.shield.bungee.hooks.nLoginBungeeHook;
 import io.v4guard.shield.bungee.listener.BungeeRedisBungeeListener;
+import io.v4guard.shield.bungee.listener.JoinListener;
 import io.v4guard.shield.bungee.messenger.BungeePluginMessageProcessor;
 import io.v4guard.shield.bungee.service.BungeeConnectedCountService;
 import io.v4guard.shield.common.ShieldCommon;
@@ -46,13 +47,21 @@ public class ShieldBungee extends Plugin implements UniversalPlugin {
                 logger.log(Level.WARNING, "(BungeeCord) Registering default connected counter service");
 
                 if (this.isPluginEnabled("RedisBungee")) {
-                    logger.log(Level.INFO, "(BungeeCord) Detected RedisBungee, hooking into it");
-                    RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService();
-                    this.connectedCounterService = redisBungeeConnectedCounterService;
-                    this.getProxy().getPluginManager().registerListener(this, new BungeeRedisBungeeListener(redisBungeeConnectedCounterService));
+                    try {
+                        Class.forName("com.imaginarycode.minecraft.redisbungee.api.events.IPubSubMessageEvent");
+                        logger.log(Level.INFO, "(BungeeCord) Detected RedisBungee, hooking into it");
+                        RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService(this.getCommon());
+                        this.connectedCounterService = redisBungeeConnectedCounterService;
+                        this.getProxy().getPluginManager().registerListener(this, new BungeeRedisBungeeListener(this, redisBungeeConnectedCounterService));
+
+                    } catch (Exception e) {
+                        logger.log(Level.SEVERE,"Your RedisBungee version is outdated. Please update to the latest version called ValioBungee or make your own implementation.");
+                        this.connectedCounterService = new BungeeConnectedCountService(this);
+                    }
                 } else {
                     this.connectedCounterService = new BungeeConnectedCountService(this);
                 }
+                this.getServer().getPluginManager().registerListener(this, new JoinListener(this,connectedCounterService));
             }
 
             this.checkForHooks();
@@ -151,19 +160,17 @@ public class ShieldBungee extends Plugin implements UniversalPlugin {
 
     private void checkForHooks() {
         if (this.isPluginEnabled("nLogin")) {
-            this.activeHook = new nLoginBungeeHook(this);
+            this.registerAuthHook(new nLoginBungeeHook(this));
         }
 
         if (this.isPluginEnabled("JPremium")) {
-            this.activeHook = new JPremiumBungeeHook(this);
+            this.registerAuthHook(new JPremiumBungeeHook(this));
         }
 
         if (this.activeHook == null) {
             logger.log(Level.SEVERE, "(BungeeCord) No authentication hooks found.");
             logger.log(Level.SEVERE, "(BungeeCord) Register your own hook or install one of these authentication plugins to use account shield:");
             logger.log(Level.SEVERE, "(BungeeCord) Available hooks: nLogin, JPremium");
-        } else {
-            this.registerAuthHook(this.activeHook);
         }
     }
 }
