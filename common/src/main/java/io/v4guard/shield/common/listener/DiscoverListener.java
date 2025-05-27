@@ -1,7 +1,6 @@
 package io.v4guard.shield.common.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.v4guard.connector.api.socket.SocketMessageListener;
 import io.v4guard.shield.common.ShieldCommon;
@@ -27,7 +26,7 @@ public class DiscoverListener extends SocketMessageListener {
 
                 String ip = node.get("ip").asText();
 
-                Collection<String> connectedAccounts = shieldCommon.getShieldAPI().getConnectedCounterService().getConnectedAccounts(ip, /* ! use the limit of the setting*/999);
+                Collection<String> connectedAccounts = shieldCommon.getShieldAPI().getConnectedCounterService().getConnectedAccounts(ip, Integer.parseInt(shieldCommon.getAddon().getSettings().get("accountLimit")));
 
                 ObjectNode response = shieldCommon.getObjectMapper().createObjectNode();
                 response.set("accounts", shieldCommon.getObjectMapper().valueToTree(connectedAccounts));
