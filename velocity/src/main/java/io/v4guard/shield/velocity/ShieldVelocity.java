@@ -25,6 +25,7 @@ import io.v4guard.shield.common.universal.UniversalPlugin;
 import io.v4guard.shield.velocity.hooks.JPremiumVelocityHook;
 import io.v4guard.shield.velocity.hooks.nLoginVelocityHook;
 import io.v4guard.shield.velocity.listener.AccountLimitJoinListener;
+import io.v4guard.shield.velocity.listener.PremiumCheckListener;
 import io.v4guard.shield.velocity.listener.VelocityRedisBungeeListener;
 import io.v4guard.shield.velocity.messenger.VelocityPluginMessageProcessor;
 import io.v4guard.shield.velocity.service.VelocityConnectedCounterService;
@@ -208,6 +209,7 @@ public class ShieldVelocity implements UniversalPlugin {
             logger.error("(Velocity) No authentication hooks found.");
             logger.error("(Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
             logger.error("(Velocity) Available hooks: nLogin, JPremium");
+            this.proxyServer.getEventManager().register(this, new PremiumCheckListener(this));
         }
     }
 }

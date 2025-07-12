@@ -8,6 +8,7 @@ import io.v4guard.shield.bungee.hooks.JPremiumBungeeHook;
 import io.v4guard.shield.bungee.hooks.nLoginBungeeHook;
 import io.v4guard.shield.bungee.listener.BungeeRedisBungeeListener;
 import io.v4guard.shield.bungee.listener.AccountLimitJoinListener;
+import io.v4guard.shield.bungee.listener.PremiumCheckListener;
 import io.v4guard.shield.bungee.messenger.BungeePluginMessageProcessor;
 import io.v4guard.shield.bungee.service.BungeeConnectedCountService;
 import io.v4guard.shield.common.ShieldCommon;
@@ -176,6 +177,8 @@ public class ShieldBungee extends Plugin implements UniversalPlugin {
             logger.log(Level.SEVERE, "(BungeeCord) No authentication hooks found.");
             logger.log(Level.SEVERE, "(BungeeCord) Register your own hook or install one of these authentication plugins to use account shield:");
             logger.log(Level.SEVERE, "(BungeeCord) Available hooks: nLogin, JPremium");
+
+            this.getServer().getPluginManager().registerListener(this, new PremiumCheckListener(this));
         }
     }
 }

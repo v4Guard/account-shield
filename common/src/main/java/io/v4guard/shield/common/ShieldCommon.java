@@ -23,7 +23,7 @@ public class ShieldCommon {
         this.objectMapper = new ObjectMapper();
         if (shieldPlatform != ShieldPlatform.SPIGOT) {
             this.connectorAPI = v4GuardConnectorProvider.get();
-            connectorAPI.getEventRegistery().registerListener(new DiscoverListener("accshield:discover", this));
+            connectorAPI.getEventRegistry().registerListener(new DiscoverListener("accshield:discover", this));
         }
     }
 
