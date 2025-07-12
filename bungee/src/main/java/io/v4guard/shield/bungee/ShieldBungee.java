@@ -7,7 +7,7 @@ import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.bungee.hooks.JPremiumBungeeHook;
 import io.v4guard.shield.bungee.hooks.nLoginBungeeHook;
 import io.v4guard.shield.bungee.listener.BungeeRedisBungeeListener;
-import io.v4guard.shield.bungee.listener.JoinListener;
+import io.v4guard.shield.bungee.listener.AccountLimitJoinListener;
 import io.v4guard.shield.bungee.messenger.BungeePluginMessageProcessor;
 import io.v4guard.shield.bungee.service.BungeeConnectedCountService;
 import io.v4guard.shield.common.ShieldCommon;
@@ -44,7 +44,9 @@ public class ShieldBungee extends Plugin implements UniversalPlugin {
             shieldCommon.registerShieldAPI(shieldAPI);
 
             if (shieldCommon.getShieldAPI().getConnectedCounterService() == null) {
-                logger.log(Level.WARNING, "(BungeeCord) Registering default connected counter service");
+                //logger.log(Level.WARNING, "(BungeeCord) Registering default connected counter service");
+
+                boolean registered = false;
 
                 if (this.isPluginEnabled("RedisBungee")) {
                     try {
@@ -53,15 +55,18 @@ public class ShieldBungee extends Plugin implements UniversalPlugin {
                         RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService(this.getCommon());
                         this.connectedCounterService = redisBungeeConnectedCounterService;
                         this.getProxy().getPluginManager().registerListener(this, new BungeeRedisBungeeListener(this, redisBungeeConnectedCounterService));
-
+                        registered = true;
                     } catch (Exception e) {
                         logger.log(Level.SEVERE,"Your RedisBungee version is outdated. Please update to the latest version called ValioBungee or make your own implementation.");
-                        this.connectedCounterService = new BungeeConnectedCountService(this);
                     }
-                } else {
+                }
+
+                if (!registered) {
+                    logger.log(Level.WARNING, "(BungeeCord) No connected counter service found, using default implementation");
                     this.connectedCounterService = new BungeeConnectedCountService(this);
                 }
-                this.getServer().getPluginManager().registerListener(this, new JoinListener(this,connectedCounterService));
+
+                this.getServer().getPluginManager().registerListener(this, new AccountLimitJoinListener(this,connectedCounterService));
             }
 
             this.checkForHooks();

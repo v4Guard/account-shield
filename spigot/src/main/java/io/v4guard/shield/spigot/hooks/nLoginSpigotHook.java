@@ -41,16 +41,10 @@ public class nLoginSpigotHook extends AuthenticationHook implements Listener {
 
     @EventHandler
     public void onRegister(RegisterEvent event) {
-        Authentication auth = new Authentication(
-                event.getPlayer().getName(),
-                event.getPlayer().getUniqueId(),
-                AuthType.REGISTER,
-                event.getPlayer().hasPermission("v4guard.accshield")
-        );
-
+        PlayerAdapter player = new SpigotAdapter(event.getPlayer());
+        Authentication auth = prepareAuthentication(player, AuthType.REGISTER);
         plugin.sendAuthenticationData(auth);
     }
-
 
     @EventHandler
     public void onWrongPassword(WrongPasswordEvent event) {
