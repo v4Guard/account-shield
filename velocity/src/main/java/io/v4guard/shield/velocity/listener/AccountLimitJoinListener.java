@@ -11,11 +11,13 @@ import java.net.InetAddress;
 import java.util.Collections;
 import java.util.List;
 
-public class JoinListener {
+public class AccountLimitJoinListener {
+
     private final ShieldVelocity plugin;
     private final ConnectedCounterService connectedCounterService;
+    private final List<String> defaultMessage = Collections.singletonList("§d▲ §lV4GUARD §7Too many accounts connected from this IP :(.");
 
-    public JoinListener(ShieldVelocity plugin, ConnectedCounterService connectedCounterService) {
+    public AccountLimitJoinListener(ShieldVelocity plugin, ConnectedCounterService connectedCounterService) {
         this.plugin = plugin;
         this.connectedCounterService = connectedCounterService;
     }
@@ -27,19 +29,16 @@ public class JoinListener {
         int connectedAccounts = connectedCounterService.getConnectedAccounts(address);
         int maxAccounts = Integer.parseInt(plugin.getCommon().getAddon().getSettings().get("accountLimit"));
 
-        if (maxAccounts == -1) {
-            return;
-        }
+        if (maxAccounts == -1) return;
 
         if (connectedAccounts >= maxAccounts) {
-            List<String> message = plugin.getCommon().getAddon().getMessages().getOrDefault("tooManyAccounts",
-                    Collections.singletonList("§d▲ §lV4GUARD §7Too many accounts connected from this IP :(."));
+            List<String> message = plugin.getCommon()
+                    .getAddon().getMessages()
+                    .getOrDefault("tooManyAccounts", defaultMessage);
 
-            event.setResult(
-                    LoginEvent.ComponentResult.denied(
-                            Component.text(StringUtils.buildMultilineString(message))
-                    )
-            );
+            event.setResult(LoginEvent.ComponentResult.denied(
+                    Component.text(StringUtils.buildMultilineString(message))
+            ));
         }
     }
 }
