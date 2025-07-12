@@ -7,7 +7,11 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
+import io.v4guard.shield.common.redis.UserStateUpdateRedisMessage;
+import io.v4guard.shield.common.redis.type.OperationType;
 import io.v4guard.shield.velocity.ShieldVelocity;
+
+import java.net.InetAddress;
 
 public class VelocityRedisBungeeListener {
     private final ShieldVelocity plugin;
@@ -23,10 +27,11 @@ public class VelocityRedisBungeeListener {
     public void onPlayerJoin(PostLoginEvent event) {
         redisBungeeAPI.sendChannelMessage(
                 "accshield",
-                getMessage("join",
+                createMessage(OperationType.JOIN,
                         event.getPlayer().getUsername(),
-                        event.getPlayer().getRemoteAddress().getAddress().getHostAddress()
-                ));
+                        event.getPlayer().getRemoteAddress().getAddress()
+                )
+        );
 
         redisBungeeListener.add(event.getPlayer().getRemoteAddress().getAddress(), event.getPlayer().getUsername());
     }
@@ -35,26 +40,31 @@ public class VelocityRedisBungeeListener {
     public void onPlayerQuit(DisconnectEvent event) {
         redisBungeeAPI.sendChannelMessage(
                 "accshield",
-                getMessage("quit",
+                createMessage(OperationType.QUIT,
                         event.getPlayer().getUsername(),
-                        event.getPlayer().getRemoteAddress().getAddress().getHostAddress()
+                        event.getPlayer().getRemoteAddress().getAddress()
                 ));
         redisBungeeListener.remove(event.getPlayer().getRemoteAddress().getAddress(), event.getPlayer().getUsername());
     }
 
     @Subscribe
     public void onMessage(PubSubMessageEvent event) {
-        if (event.getChannel().equals("accshield")) {
-            redisBungeeListener.handleMessage(event.getMessage());
-        }
+        if (!event.getChannel().equals("accshield")) return;
+
+        // Delegate the handling of the message to our common implementation
+        redisBungeeListener.handleMessage(event.getMessage());
     }
 
-    private String getMessage(String type, String name, String ip) {
-        ObjectNode data = plugin.getCommon().getObjectMapper().createObjectNode();
-        data.put("type", type);
-        data.put("name", name);
-        data.put("ip", ip);
-        return data.toString();
+    private String createMessage(OperationType type, String name, InetAddress ip) {
+        UserStateUpdateRedisMessage message = new UserStateUpdateRedisMessage(
+                type, ip, name
+        );
+        try {
+            return plugin.getCommon().getObjectMapper().writeValueAsString(message);
+        } catch (Exception e) {
+            plugin.getLogger().error("Failed to create message for RedisBungee", e);
+            return "";
+        }
     }
 
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.v4guard.shield.api.service.ConnectedCounterService;
 import io.v4guard.shield.common.ShieldCommon;
+import io.v4guard.shield.common.redis.UserStateUpdateRedisMessage;
+import io.v4guard.shield.common.redis.type.OperationType;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -86,23 +88,27 @@ public class RedisBungeeConnectedCounterService implements ConnectedCounterServi
 
     public void handleMessage(String message) {
         try {
-            JsonNode data = shieldCommon.getObjectMapper().readTree(message);
-
-            String type = data.get("type").asText();
-            String name = data.get("name").asText();
-            String ip = data.get("ip").asText();
-            InetAddress address = InetAddress.getByName(ip);
-            Set<String> accounts = ipAddresses.getOrDefault(address, new HashSet<>());
-
-            if (type.equals("join")) {
-                accounts.add(name);
-                ipAddresses.put(address, accounts);
-            } else if (type.equals("quit")) {
-                accounts.remove(name);
-                ipAddresses.put(address, accounts);
+            UserStateUpdateRedisMessage data = shieldCommon.getObjectMapper().readValue(message, UserStateUpdateRedisMessage.class);
+            if (data == null) {
+                // ! Invalid message format, ignore
+                return;
             }
 
-        } catch (JsonProcessingException | UnknownHostException e) {
+            Set<String> accounts = ipAddresses.getOrDefault(data.ipAddress(), new HashSet<>());
+            switch (data.operationType()) {
+                case JOIN:
+                    accounts.add(data.username());
+                    break;
+                case QUIT:
+                    accounts.remove(data.username());
+                    break;
+                default:
+                    // ! Unsupported operation type, ignore
+                    return;
+            }
+
+            ipAddresses.put(data.ipAddress(), accounts);
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 

@@ -24,7 +24,7 @@ import io.v4guard.shield.api.platform.ShieldPlatform;
 import io.v4guard.shield.common.universal.UniversalPlugin;
 import io.v4guard.shield.velocity.hooks.JPremiumVelocityHook;
 import io.v4guard.shield.velocity.hooks.nLoginVelocityHook;
-import io.v4guard.shield.velocity.listener.JoinListener;
+import io.v4guard.shield.velocity.listener.AccountLimitJoinListener;
 import io.v4guard.shield.velocity.listener.VelocityRedisBungeeListener;
 import io.v4guard.shield.velocity.messenger.VelocityPluginMessageProcessor;
 import io.v4guard.shield.velocity.service.VelocityConnectedCounterService;
@@ -81,19 +81,27 @@ public class ShieldVelocity implements UniversalPlugin {
             ShieldAPI shieldAPI = new DefaultShieldAPI(this);
             shieldCommon.registerShieldAPI(shieldAPI);
 
+
             if (shieldCommon.getShieldAPI().getConnectedCounterService() == null) {
-                logger.warn("(Velocity) Registering default connected counter service");
+                //logger.warn("(Velocity) Registering default connected counter service");
+
+                boolean registered = false;
 
                 if (this.isPluginEnabled("redisbungee")) {
                     logger.info("(Velocity) Detected RedisBungee, hooking into it");
                     RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService(this.getCommon());
+
                     this.connectedCounterService = redisBungeeConnectedCounterService;
-                    this.getServer().getEventManager().register(this, new VelocityRedisBungeeListener(this,redisBungeeConnectedCounterService));
-                } else {
-                    logger.info("(Velocity) Registering default connected counter service (single)");
+                    this.getServer().getEventManager().register(this, new VelocityRedisBungeeListener(this, redisBungeeConnectedCounterService));
+                    registered = true;
+                }
+
+                if (!registered) {
+                    logger.warn("(Velocity) No connected counter service found, using default implementation");
                     this.connectedCounterService = new VelocityConnectedCounterService(proxyServer);
                 }
-                this.getServer().getEventManager().register(this, new JoinListener(this,connectedCounterService));
+
+                this.getServer().getEventManager().register(this, new AccountLimitJoinListener(this, connectedCounterService));
             }
 
             this.checkForHooks();
@@ -181,6 +189,9 @@ public class ShieldVelocity implements UniversalPlugin {
         return this.proxyServer.getPluginManager().isLoaded(pluginName);
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
 
     private void checkForHooks() {
         if (this.isPluginEnabled("nlogin")) {
