@@ -37,7 +37,7 @@ import java.util.List;
 @Plugin(
         id = "v4guard-account-shield",
         name = "v4Guard Account Shield",
-        version = "2.5.0",
+        version = "3.0.0",
         url = "https://v4guard.io",
         description = "v4Guard Account Shield for Minecraft Servers",
         authors = {"v4Guard"},
