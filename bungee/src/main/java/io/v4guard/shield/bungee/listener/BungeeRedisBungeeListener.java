@@ -1,10 +1,11 @@
 package io.v4guard.shield.bungee.listener;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 import io.v4guard.shield.bungee.ShieldBungee;
 import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
+import io.v4guard.shield.common.redis.UserStateUpdateRedisMessage;
+import io.v4guard.shield.common.redis.type.OperationType;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -29,10 +30,11 @@ public class BungeeRedisBungeeListener implements Listener {
 
         redisBungeeAPI.sendChannelMessage(
                 "accshield",
-                getMessage("join",
+                createMessage(OperationType.JOIN,
                         event.getPlayer().getName(),
-                        ip.getHostAddress()
+                        ip
                 ));
+
         redisBungeeListener.add(ip, event.getPlayer().getName());
     }
 
@@ -42,26 +44,30 @@ public class BungeeRedisBungeeListener implements Listener {
 
         redisBungeeAPI.sendChannelMessage(
                 "accshield",
-                getMessage("quit",
+                createMessage(OperationType.JOIN,
                         event.getPlayer().getName(),
-                        ip.getHostAddress()
+                        ip
                 ));
+
         redisBungeeListener.remove(ip, event.getPlayer().getName());
     }
 
     @EventHandler
     public void onMessage(PubSubMessageEvent event) {
-        if (event.getChannel().equals("accshield")) {
-            redisBungeeListener.handleMessage(event.getMessage());
-        }
+        if (!event.getChannel().equals("accshield")) return;
+
+        redisBungeeListener.handleMessage(event.getMessage());
     }
 
-    private String getMessage(String type, String name, String ip) {
-        ObjectNode data = plugin.getCommon().getObjectMapper().createObjectNode();
-        data.put("type", type);
-        data.put("name", name);
-        data.put("ip", ip);
-        return data.toString();
+    private String createMessage(OperationType type, String name, InetAddress ip) {
+        UserStateUpdateRedisMessage message = new UserStateUpdateRedisMessage(
+                type, ip, name
+        );
+        try {
+            return plugin.getCommon().getObjectMapper().writeValueAsString(message);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
 }
