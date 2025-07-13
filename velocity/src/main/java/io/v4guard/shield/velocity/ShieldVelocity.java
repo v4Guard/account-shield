@@ -10,18 +10,22 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.LegacyChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import io.v4guard.connector.common.CoreInstance;
+import io.v4guard.shield.api.ShieldAPI;
+import io.v4guard.shield.api.auth.Authentication;
 import io.v4guard.shield.api.service.ConnectedCounterService;
 import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.common.ShieldCommon;
+import io.v4guard.shield.common.api.DefaultShieldAPI;
 import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
 import io.v4guard.shield.common.constants.ShieldConstants;
-import io.v4guard.shield.common.hook.AuthenticationHook;
+import io.v4guard.shield.api.hook.AuthenticationHook;
 import io.v4guard.shield.common.messenger.PluginMessenger;
-import io.v4guard.shield.common.mode.ShieldMode;
+import io.v4guard.shield.api.platform.ShieldPlatform;
 import io.v4guard.shield.common.universal.UniversalPlugin;
 import io.v4guard.shield.velocity.hooks.JPremiumVelocityHook;
 import io.v4guard.shield.velocity.hooks.nLoginVelocityHook;
+import io.v4guard.shield.velocity.listener.AccountLimitJoinListener;
+import io.v4guard.shield.velocity.listener.PremiumCheckListener;
 import io.v4guard.shield.velocity.listener.VelocityRedisBungeeListener;
 import io.v4guard.shield.velocity.messenger.VelocityPluginMessageProcessor;
 import io.v4guard.shield.velocity.service.VelocityConnectedCounterService;
@@ -33,7 +37,7 @@ import java.util.List;
 @Plugin(
         id = "v4guard-account-shield",
         name = "v4Guard Account Shield",
-        version = "2.5.0",
+        version = "3.0.0",
         url = "https://v4guard.io",
         description = "v4Guard Account Shield for Minecraft Servers",
         authors = {"v4Guard"},
@@ -41,13 +45,14 @@ import java.util.List;
                 @Dependency(id = "v4guard-plugin"),
                 @Dependency(id = "nlogin", optional = true),
                 @Dependency(id = "jpremium", optional = true),
-                @Dependency(id = "redisbnugee", optional = true)
+                @Dependency(id = "redisbungee", optional = true)
         }
 )
 public class ShieldVelocity implements UniversalPlugin {
 
     private AuthenticationHook activeHook;
     private ShieldCommon shieldCommon;
+    private ConnectedCounterService connectedCounterService;
     private final ProxyServer proxyServer;
     private PluginMessenger messenger;
     private final Logger logger;
@@ -72,20 +77,32 @@ public class ShieldVelocity implements UniversalPlugin {
         logger.info("Enabling...");
 
         try {
-            shieldCommon = new ShieldCommon(ShieldMode.VELOCITY);
+            shieldCommon = new ShieldCommon(ShieldPlatform.VELOCITY);
+
+            ShieldAPI shieldAPI = new DefaultShieldAPI(this);
+            shieldCommon.registerShieldAPI(shieldAPI);
+
 
             if (shieldCommon.getShieldAPI().getConnectedCounterService() == null) {
-                logger.warn("(Velocity) Registering default connected counter service");
+                //logger.warn("(Velocity) Registering default connected counter service");
+
+                boolean registered = false;
 
                 if (this.isPluginEnabled("redisbungee")) {
                     logger.info("(Velocity) Detected RedisBungee, hooking into it");
-                    RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService();
-                    shieldCommon.getShieldAPI().setConnectedCounterService(redisBungeeConnectedCounterService);
-                    this.getServer().getEventManager().register(this, new VelocityRedisBungeeListener(redisBungeeConnectedCounterService));
-                } else {
-                    logger.info("(Velocity) Registering default connected counter service (single)");
-                    shieldCommon.getShieldAPI().setConnectedCounterService(new VelocityConnectedCounterService(proxyServer));
+                    RedisBungeeConnectedCounterService redisBungeeConnectedCounterService = new RedisBungeeConnectedCounterService(this.getCommon());
+
+                    this.connectedCounterService = redisBungeeConnectedCounterService;
+                    this.getServer().getEventManager().register(this, new VelocityRedisBungeeListener(this, redisBungeeConnectedCounterService));
+                    registered = true;
                 }
+
+                if (!registered) {
+                    logger.warn("(Velocity) No connected counter service found, using default implementation");
+                    this.connectedCounterService = new VelocityConnectedCounterService(proxyServer);
+                }
+
+                this.getServer().getEventManager().register(this, new AccountLimitJoinListener(this, connectedCounterService));
             }
 
             this.checkForHooks();
@@ -116,14 +133,51 @@ public class ShieldVelocity implements UniversalPlugin {
         return shieldCommon;
     }
 
+
     @Override
-    public ConnectedCounterService getConnectedPlayers() {
-        return shieldCommon.getShieldAPI().getConnectedCounterService();
+    public void registerAuthHook(AuthenticationHook hook) {
+        if (this.activeHook != null) {
+            throw new IllegalStateException("An authentication hook is already registered");
+        }
+
+        this.logger.info("Registered authentication hook: {}", hook.getHookName());
+        this.activeHook = hook;
+        this.proxyServer.getEventManager().register(this, hook);
     }
 
     @Override
     public AuthenticationHook getActiveAuthenticationHook() {
         return activeHook;
+    }
+
+    @Override
+    public void unregisterAuthHook(AuthenticationHook hook) {
+        if (this.activeHook == null) {
+            throw new IllegalStateException("No authentication hook is currently registered");
+        }
+
+        if (this.activeHook.getHookName().equalsIgnoreCase(hook.getHookName())) {
+            throw new IllegalArgumentException("The hook is not registered");
+        }
+
+        this.logger.info("Unregistered authentication hook: {}", hook.getHookName());
+        this.proxyServer.getEventManager().unregisterListener(this, hook);
+        this.activeHook = null;
+    }
+
+    @Override
+    public void sendAuthenticationData(Authentication auth) {
+        this.shieldCommon.sendMessage(auth);
+    }
+
+    @Override
+    public ConnectedCounterService getConnectedPlayers() {
+        return this.connectedCounterService;
+    }
+
+    @Override
+    public void setRegisteredConnectedCounterService(ConnectedCounterService connectedCounterService) {
+        this.connectedCounterService = connectedCounterService;
     }
 
     @Override
@@ -136,23 +190,26 @@ public class ShieldVelocity implements UniversalPlugin {
         return this.proxyServer.getPluginManager().isLoaded(pluginName);
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     private void checkForHooks() {
         if (this.isPluginEnabled("nlogin")) {
-            this.activeHook = new nLoginVelocityHook(this);
+            this.registerAuthHook(new nLoginVelocityHook(this));
+            return;
         }
 
         if (this.isPluginEnabled("jpremium")) {
-            this.activeHook = new JPremiumVelocityHook(this);
+            this.registerAuthHook(new JPremiumVelocityHook(this));
+            return;
         }
 
         if (this.activeHook == null) {
             logger.error("(Velocity) No authentication hooks found.");
             logger.error("(Velocity) Register your own hook or install one of these authentication plugins to use account shield:");
             logger.error("(Velocity) Available hooks: nLogin, JPremium");
-        } else {
-            CoreInstance.get().setAccountShieldFound(true);
-            logger.info("(Velocity) Hooked into {}", this.activeHook.getHookName());
-            this.proxyServer.getEventManager().register(this, this.activeHook);
+            this.proxyServer.getEventManager().register(this, new PremiumCheckListener(this));
         }
     }
 }

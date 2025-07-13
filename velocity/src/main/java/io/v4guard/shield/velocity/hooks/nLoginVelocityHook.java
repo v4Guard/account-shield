@@ -6,10 +6,12 @@ import com.nickuc.login.api.event.velocity.auth.RegisterEvent;
 import com.nickuc.login.api.event.velocity.auth.WrongPasswordEvent;
 import com.velocitypowered.api.event.Continuation;
 import com.velocitypowered.api.event.Subscribe;
-import io.v4guard.connector.common.accounts.auth.AuthType;
-import io.v4guard.connector.common.accounts.auth.Authentication;
-import io.v4guard.shield.common.hook.AuthenticationHook;
+import io.v4guard.shield.api.adapter.PlayerAdapter;
+import io.v4guard.shield.api.auth.AuthType;
+import io.v4guard.shield.api.auth.Authentication;
+import io.v4guard.shield.api.hook.AuthenticationHook;
 import io.v4guard.shield.velocity.ShieldVelocity;
+import io.v4guard.shield.velocity.adapter.VelocityPlayerAdapter;
 
 
 public class nLoginVelocityHook extends AuthenticationHook {
@@ -23,53 +25,41 @@ public class nLoginVelocityHook extends AuthenticationHook {
 
     @Subscribe
     public void onPremiumLogin(PremiumLoginEvent event, Continuation continuation) {
-        Authentication auth = new Authentication(
-                event.getPlayer().getUsername(),
-                event.getPlayer().getUniqueId(),
-                AuthType.MOJANG,
-                event.getPlayer().hasPermission("v4guard.accshield")
-        );
-        plugin.getCommon().sendMessage(auth);
+        PlayerAdapter player = new VelocityPlayerAdapter(event.getPlayer());
+
+        Authentication authentication = prepareAuthentication(player, AuthType.MOJANG);
+        plugin.sendAuthenticationData(authentication);
 
         continuation.resume();
     }
 
     @Subscribe
     public void onLogin(LoginEvent event, Continuation continuation) {
-        Authentication auth = new Authentication(
-                event.getPlayer().getUsername(),
-                event.getPlayer().getUniqueId(),
-                AuthType.LOGIN,
-                event.getPlayer().hasPermission("v4guard.accshield")
-        );
-        plugin.getCommon().sendMessage(auth);
+        PlayerAdapter player = new VelocityPlayerAdapter(event.getPlayer());
+
+        Authentication auth = prepareAuthentication(player, AuthType.LOGIN);
+        plugin.sendAuthenticationData(auth);
 
         continuation.resume();
     }
 
     @Subscribe
     public void onRegister(RegisterEvent event, Continuation continuation) {
-        Authentication auth = new Authentication(
-                event.getPlayer().getUsername(),
-                event.getPlayer().getUniqueId(),
-                AuthType.REGISTER,
-                event.getPlayer().hasPermission("v4guard.accshield")
-        );
+        PlayerAdapter player = new VelocityPlayerAdapter(event.getPlayer());
 
-        plugin.getCommon().sendMessage(auth);
+        Authentication auth = prepareAuthentication(player, AuthType.REGISTER);
+        plugin.sendAuthenticationData(auth);
+
         continuation.resume();
     }
 
     @Subscribe
     public void onWrongPassword(WrongPasswordEvent event, Continuation continuation) {
-        Authentication auth = new Authentication(
-                event.getPlayer().getUsername(),
-                event.getPlayer().getUniqueId(),
-                AuthType.WRONG,
-                event.getPlayer().hasPermission("v4guard.accshield")
-        );
+        PlayerAdapter player = new VelocityPlayerAdapter(event.getPlayer());
 
-        plugin.getCommon().sendMessage(auth);
+        Authentication auth = prepareAuthentication(player, AuthType.WRONG);
+        plugin.sendAuthenticationData(auth);
+
         continuation.resume();
     }
 
