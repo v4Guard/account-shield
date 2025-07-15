@@ -1,5 +1,5 @@
 name: v4guard-account-shield
-version: 2.5.0
+version: 3.0.0
 main: io.v4guard.shield.spigot.ShieldSpigot
 author: v4Guard
 softdepend:
