@@ -9,7 +9,6 @@ import io.v4guard.shield.api.ShieldAPI;
 import io.v4guard.shield.api.auth.Authentication;
 import io.v4guard.shield.api.v4GuardShieldProvider;
 import io.v4guard.shield.api.platform.ShieldPlatform;
-import io.v4guard.shield.common.listener.DiscoverListener;
 
 public class ShieldCommon {
 
@@ -21,10 +20,14 @@ public class ShieldCommon {
     public ShieldCommon(ShieldPlatform platform) {
         this.shieldPlatform = platform;
         this.objectMapper = new ObjectMapper();
+
         if (shieldPlatform != ShieldPlatform.SPIGOT) {
             this.connectorAPI = v4GuardConnectorProvider.get();
-            connectorAPI.getEventRegistry().registerListener(new DiscoverListener("accshield:discover", this));
         }
+    }
+
+    public ConnectorAPI getConnectorAPI() {
+        return connectorAPI;
     }
 
     public void registerShieldAPI(ShieldAPI shieldAPI) {
@@ -45,6 +48,7 @@ public class ShieldCommon {
     }
 
     public void sendMessage(Authentication auth) {
+        if (connectorAPI == null) return;
         if (!connectorAPI.getConnection().isReady()) return;
         if (!connectorAPI.getActiveSettings().getActiveAddons().get("accshield").isEnabled()) return;
 
@@ -55,6 +59,7 @@ public class ShieldCommon {
     }
 
     public void sendMessage(String channel, String payload) {
+        if (connectorAPI == null) return;
         if (!connectorAPI.getConnection().isReady()) return;
         if (!connectorAPI.getActiveSettings().getActiveAddons().get("accshield").isEnabled()) return;
 

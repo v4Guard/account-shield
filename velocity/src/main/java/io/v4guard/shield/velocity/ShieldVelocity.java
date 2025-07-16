@@ -19,6 +19,7 @@ import io.v4guard.shield.common.api.DefaultShieldAPI;
 import io.v4guard.shield.common.api.service.RedisBungeeConnectedCounterService;
 import io.v4guard.shield.common.constants.ShieldConstants;
 import io.v4guard.shield.api.hook.AuthenticationHook;
+import io.v4guard.shield.common.listener.DiscoverListener;
 import io.v4guard.shield.common.messenger.PluginMessenger;
 import io.v4guard.shield.api.platform.ShieldPlatform;
 import io.v4guard.shield.common.universal.UniversalPlugin;
@@ -81,7 +82,9 @@ public class ShieldVelocity implements UniversalPlugin {
 
             ShieldAPI shieldAPI = new DefaultShieldAPI(this);
             shieldCommon.registerShieldAPI(shieldAPI);
-
+            shieldCommon.getConnectorAPI()
+                    .getEventRegistry()
+                    .registerListener(new DiscoverListener("accshield:discover", shieldCommon));
 
             if (shieldCommon.getShieldAPI().getConnectedCounterService() == null) {
                 //logger.warn("(Velocity) Registering default connected counter service");

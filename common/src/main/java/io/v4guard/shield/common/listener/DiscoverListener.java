@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 public class DiscoverListener extends SocketMessageListener {
 
-    private ShieldCommon shieldCommon;
+    private final ShieldCommon shieldCommon;
 
     public DiscoverListener(String eventName, ShieldCommon shieldCommon) {
         super(eventName);
