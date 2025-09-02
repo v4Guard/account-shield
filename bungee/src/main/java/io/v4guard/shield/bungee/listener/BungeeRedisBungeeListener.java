@@ -17,7 +17,6 @@ import java.net.InetSocketAddress;
 public class BungeeRedisBungeeListener implements Listener {
     private final ShieldBungee plugin;
     private final RedisBungeeConnectedCounterService redisBungeeListener;
-    private final RedisBungeeAPI redisBungeeAPI = RedisBungeeAPI.getRedisBungeeApi();
 
     public BungeeRedisBungeeListener(ShieldBungee plugin, RedisBungeeConnectedCounterService redisBungeeListener) {
         this.plugin = plugin;
@@ -28,7 +27,7 @@ public class BungeeRedisBungeeListener implements Listener {
     public void onPlayerJoin(PostLoginEvent event) {
         InetAddress ip = ((InetSocketAddress) event.getPlayer().getSocketAddress()).getAddress();
 
-        redisBungeeAPI.sendChannelMessage(
+        RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(
                 "accshield",
                 createMessage(OperationType.JOIN,
                         event.getPlayer().getName(),
@@ -42,7 +41,7 @@ public class BungeeRedisBungeeListener implements Listener {
     public void onPlayerQuit(PlayerDisconnectEvent event) {
         InetAddress ip = ((InetSocketAddress) event.getPlayer().getSocketAddress()).getAddress();
 
-        redisBungeeAPI.sendChannelMessage(
+        RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(
                 "accshield",
                 createMessage(OperationType.JOIN,
                         event.getPlayer().getName(),
