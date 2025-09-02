@@ -131,20 +131,20 @@ public class ShieldSpigot extends JavaPlugin implements UniversalPlugin {
     }
 
     private void checkForHooks() {
-        if (this.isPluginEnabled("authme")) {
-            this.activeHook = new AuthMeSpigotHook(this);
+        if (this.isPluginEnabled("AuthMe")) {
+            this.registerAuthHook(new AuthMeSpigotHook(this));
+            return;
         }
 
         if (this.isPluginEnabled("nlogin")) {
-            this.activeHook = new nLoginSpigotHook(this);
+            this.registerAuthHook(new nLoginSpigotHook(this));
+            return;
         }
 
         if (this.activeHook == null) {
             logger.log(Level.SEVERE, "(Spigot) No authentication hooks found.");
             logger.log(Level.SEVERE, "(Spigot) Register your own hook or install one of these authentication plugins to use account shield:");
             logger.log(Level.SEVERE, "(Spigot) Available hooks: nLogin, Authme");
-        } else {
-            this.registerAuthHook(this.activeHook);
         }
     }
 
