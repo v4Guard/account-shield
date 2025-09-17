@@ -16,7 +16,6 @@ import java.net.InetAddress;
 public class VelocityRedisBungeeListener {
     private final ShieldVelocity plugin;
     private final RedisBungeeConnectedCounterService redisBungeeListener;
-    private final RedisBungeeAPI redisBungeeAPI = RedisBungeeAPI.getRedisBungeeApi();
 
     public VelocityRedisBungeeListener(ShieldVelocity plugin, RedisBungeeConnectedCounterService redisBungeeListener) {
         this.plugin = plugin;
@@ -25,7 +24,7 @@ public class VelocityRedisBungeeListener {
 
     @Subscribe
     public void onPlayerJoin(PostLoginEvent event) {
-        redisBungeeAPI.sendChannelMessage(
+        RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(
                 "accshield",
                 createMessage(OperationType.JOIN,
                         event.getPlayer().getUsername(),
@@ -38,7 +37,7 @@ public class VelocityRedisBungeeListener {
 
     @Subscribe
     public void onPlayerQuit(DisconnectEvent event) {
-        redisBungeeAPI.sendChannelMessage(
+        RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage(
                 "accshield",
                 createMessage(OperationType.QUIT,
                         event.getPlayer().getUsername(),

@@ -87,8 +87,6 @@ public class ShieldVelocity implements UniversalPlugin {
                     .registerListener(new DiscoverListener("accshield:discover", shieldCommon));
 
             if (shieldCommon.getShieldAPI().getConnectedCounterService() == null) {
-                //logger.warn("(Velocity) Registering default connected counter service");
-
                 boolean registered = false;
 
                 if (this.isPluginEnabled("redisbungee")) {

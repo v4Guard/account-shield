@@ -1,7 +1,7 @@
 [versions]
 
 #common
-v4guard-connector = "2.5.0"
+v4guard-connector = "3.1.0"
 jackson-databind = "2.17.1"
 annotations = "24.0.1"
 
@@ -15,7 +15,7 @@ spigot = "1.21.3-R0.1-SNAPSHOT"
 velocity = "3.4.0-SNAPSHOT"
 
 #RedisBungee
-redisbungee = "0.12.5"
+redisbungee = "0.12.6"
 
 [libraries]
 
